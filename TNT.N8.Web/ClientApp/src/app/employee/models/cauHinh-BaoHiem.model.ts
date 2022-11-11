@@ -12,6 +12,8 @@ export class CauHinhBaoHiemModel {
   tiLePhanBoMucDongBhtncuaNsdld: number;
   tiLePhanBoMucDongBhtnnncuaNld: number;
   tiLePhanBoMucDongBhtnnncuaNsdld: number;
+  mucDongToiDaBHTN: number;
+  mucLuongCoSoBHTN: number;
 
   constructor() {
     this.cauHinhBaoHiemId = null,
@@ -27,6 +29,9 @@ export class CauHinhBaoHiemModel {
     this.tiLePhanBoMucDongBhtncuaNsdld = 0;
     this.tiLePhanBoMucDongBhtnnncuaNld = 0;
     this.tiLePhanBoMucDongBhtnnncuaNsdld = 0;
+    this.mucDongToiDaBHTN = 0;
+    this.mucLuongCoSoBHTN = 0;
+  
   }
 }
 

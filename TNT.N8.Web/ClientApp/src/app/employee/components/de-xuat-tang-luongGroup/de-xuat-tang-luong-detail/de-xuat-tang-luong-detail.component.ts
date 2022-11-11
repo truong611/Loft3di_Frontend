@@ -1120,20 +1120,28 @@ export class DeXuatTangLuongDetailComponent implements OnInit {
       }
     }
 
-    this.loading = true;
-    this.quyTrinhService.pheDuyet(this.emptyGuid, 10, '', this.deXuatTLId).subscribe(res => {
-      let result: any = res;
-      if (result.statusCode == 200) {
-        let mgs = { severity: 'success', summary: 'Thông báo:', detail: result.messageCode };
-        this.showMessage(mgs);
-        this.getMasterData();
-      }
-      else {
-        this.loading = false;
-        let mgs = { severity: 'error', summary: 'Thông báo:', detail: result.messageCode };
-        this.showMessage(mgs);
+    this.confirmationService.confirm({
+      message: 'Bạn có chắc chắn muốn phê duyệt đề xuất này không?',
+      accept: async () => {
+        this.loading = true;
+        this.quyTrinhService.pheDuyet(this.emptyGuid, 10, '', this.deXuatTLId).subscribe(res => {
+          let result: any = res;
+          if (result.statusCode == 200) {
+            let mgs = { severity: 'success', summary: 'Thông báo:', detail: result.messageCode };
+            this.showMessage(mgs);
+            this.getMasterData();
+          }
+          else {
+            this.loading = false;
+            let mgs = { severity: 'error', summary: 'Thông báo:', detail: result.messageCode };
+            this.showMessage(mgs);
+          }
+        });
       }
     });
+
+
+
   }
 
   async tuChoi() {

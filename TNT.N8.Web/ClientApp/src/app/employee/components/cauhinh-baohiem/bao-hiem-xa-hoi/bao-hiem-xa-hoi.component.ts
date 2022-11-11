@@ -1,8 +1,8 @@
-import { Component, OnInit} from '@angular/core';
-import { FormGroup, FormControl, Validators} from "@angular/forms";
+import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { MessageService } from "primeng/api";
 
-import { CauHinhBaoHiemModel} from "../../../models/cauhinh-baohiem.model";
+import { CauHinhBaoHiemModel } from "../../../models/cauhinh-baohiem.model";
 
 import { EmployeeService } from "../../../services/employee.service";
 import { CommonService } from '../../../../shared/services/common.service';
@@ -37,6 +37,9 @@ export class BaoHiemXaHoiComponent implements OnInit {
   bhtnCtyControl: FormControl;
   bhtnnnCtyControl: FormControl;
 
+  mucDongToiDaBHTNControl: FormControl;
+  mucLuongCoSoBHTNControl: FormControl;
+
   constructor(
     private messageService: MessageService,
     private employeeService: EmployeeService,
@@ -61,7 +64,7 @@ export class BaoHiemXaHoiComponent implements OnInit {
     if (result.isExists) this.id = result.cauHinhBaoHiemModel.cauHinhBaoHiemId;
     this.cauHinhBaoHiemClone = result.cauHinhBaoHiemModel;
     this.listLoaiDong = result.listLoaiDong;
-    
+
     this.mapDataToForm(result.cauHinhBaoHiemModel);
   }
 
@@ -79,6 +82,8 @@ export class BaoHiemXaHoiComponent implements OnInit {
     this.bhytCtyControl = new FormControl(null, [Validators.required]);
     this.bhtnCtyControl = new FormControl(null, [Validators.required]);
     this.bhtnnnCtyControl = new FormControl(null, [Validators.required]);
+    this.mucDongToiDaBHTNControl = new FormControl(null, [Validators.required]);
+    this.mucLuongCoSoBHTNControl = new FormControl(null, [Validators.required]);
 
     this.baoHiemForm = new FormGroup({
       loaiDongControl: this.loaiDongControl,
@@ -91,8 +96,10 @@ export class BaoHiemXaHoiComponent implements OnInit {
       bhtnnnControl: this.bhtnnnControl,
       bhxhCtyControl: this.bhxhCtyControl,
       bhytCtyControl: this.bhytCtyControl,
-      bhtnCtyControl: this.bhtnCtyControl,
       bhtnnnCtyControl: this.bhtnnnCtyControl,
+      bhtnCtyControl: this.bhtnCtyControl,
+      mucDongToiDaBHTNControl: this.mucDongToiDaBHTNControl,
+      mucLuongCoSoBHTNControl: this.mucLuongCoSoBHTNControl,
     });
 
     this.baoHiemForm.disable();
@@ -128,6 +135,13 @@ export class BaoHiemXaHoiComponent implements OnInit {
     );
     this.bhtnnnCtyControl.setValue(
       cauHinhBaoHiemModel.tiLePhanBoMucDongBhtnnncuaNsdld
+    );
+
+    this.mucDongToiDaBHTNControl.setValue(
+      cauHinhBaoHiemModel.mucDongToiDaBHTN
+    );
+    this.mucLuongCoSoBHTNControl.setValue(
+      cauHinhBaoHiemModel.mucLuongCoSoBHTN
     );
 
     this.changeLoaiDong();
@@ -183,6 +197,9 @@ export class BaoHiemXaHoiComponent implements OnInit {
     bhxhModel.tiLePhanBoMucDongBhytcuaNsdld = this.commonService.convertStringToNumber(this.bhytCtyControl.value.toString());
     bhxhModel.tiLePhanBoMucDongBhtncuaNsdld = this.commonService.convertStringToNumber(this.bhtnCtyControl.value.toString());
     bhxhModel.tiLePhanBoMucDongBhtnnncuaNsdld = this.commonService.convertStringToNumber(this.bhtnnnCtyControl.value.toString());
+
+    bhxhModel.mucDongToiDaBHTN = this.commonService.convertStringToNumber(this.mucDongToiDaBHTNControl.value.toString());
+    bhxhModel.mucLuongCoSoBHTN = this.commonService.convertStringToNumber(this.mucLuongCoSoBHTNControl.value.toString());
 
     if (bhxhModel.tiLePhanBoMucDongBhxhcuaNld > 100 ||
       bhxhModel.tiLePhanBoMucDongBhytcuaNld > 100 ||

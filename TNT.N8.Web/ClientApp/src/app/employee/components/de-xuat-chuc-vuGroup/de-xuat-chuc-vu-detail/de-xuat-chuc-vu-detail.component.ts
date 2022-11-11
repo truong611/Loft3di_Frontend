@@ -328,7 +328,7 @@ export class DeXuatChucVuDetailComponent implements OnInit {
       if (listCurrentActionResource.indexOf("view") == -1) {
         let msg = { severity: 'error', summary: 'Thông báo:', detail: 'Bạn không có quyền truy cập vào đường dẫn này vui lòng quay lại trang chủ' };
         this.showMessage(msg);
-        this.router.navigate(['/home']);      
+        this.router.navigate(['/home']);
       }
       if (listCurrentActionResource.indexOf("add") == -1) {
         this.actionAdd = false;
@@ -947,18 +947,23 @@ export class DeXuatChucVuDetailComponent implements OnInit {
       }
     }
 
-    this.loading = true;
-    this.quyTrinhService.pheDuyet(this.emptyGuid, 11, '', this.deXuatTLId).subscribe(res => {
-      let result: any = res;
-      if (result.statusCode == 200) {
-        let mgs = { severity: 'success', summary: 'Thông báo:', detail: result.messageCode };
-        this.showMessage(mgs);
-        this.getMasterData();
-      }
-      else {
-        this.loading = false;
-        let mgs = { severity: 'error', summary: 'Thông báo:', detail: result.messageCode };
-        this.showMessage(mgs);
+    this.confirmationService.confirm({
+      message: 'Bạn có chắc chắn muốn phê duyệt đề xuất này không?',
+      accept: async () => {
+        this.loading = true;
+        this.quyTrinhService.pheDuyet(this.emptyGuid, 11, '', this.deXuatTLId).subscribe(res => {
+          let result: any = res;
+          if (result.statusCode == 200) {
+            let mgs = { severity: 'success', summary: 'Thông báo:', detail: result.messageCode };
+            this.showMessage(mgs);
+            this.getMasterData();
+          }
+          else {
+            this.loading = false;
+            let mgs = { severity: 'error', summary: 'Thông báo:', detail: result.messageCode };
+            this.showMessage(mgs);
+          }
+        });
       }
     });
   }

@@ -66,7 +66,7 @@ export class ChamCongOtComponent implements OnInit {
 
   /* Nếu Input có thay đổi */
   ngOnChanges(changes: SimpleChanges) {
-    
+
   }
 
   async getData() {
@@ -136,6 +136,10 @@ export class ChamCongOtComponent implements OnInit {
 
         this.listData = [...this.listData, dataRow];
       });
+      this.listData = this.listData.sort(function (a, b) { return a.code - b.code });
+      this.listData.filter((e, index) => {
+        e.stt = index + 1
+      })
     }
   }
 
@@ -144,7 +148,7 @@ export class ChamCongOtComponent implements OnInit {
       this.showMessage('warn', 'Bạn chưa chọn đủ bộ lọc các trường Từ ngày, Đến ngày');
       return;
     }
-    
+
     let ref = this.dialogService.open(ChamCongOtChiTietDialogComponent, {
       header: 'Chi tiết chấm công OT',
       width: '50%',
@@ -216,7 +220,7 @@ export class ChamCongOtComponent implements OnInit {
 
         Object.keys(item).forEach(key => {
           if (key != 'employee_id') {
-            row.push(item[key]); 
+            row.push(item[key]);
           }
         });
 

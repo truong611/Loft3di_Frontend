@@ -399,7 +399,7 @@ export class YeuCauCapPhatCreateComponent implements OnInit {
       yeuCauChiTietModel.nhanVienYeuCauId = nhanVien ? nhanVien.employeeId : this.emptyGuid;
       yeuCauChiTietModel.tenNhanVien = nhanVien.employeeName;
       yeuCauChiTietModel.phongBan = nhanVien.organizationName;
-      yeuCauChiTietModel.viTriLamViec = nhanVien.positionName;
+      yeuCauChiTietModel.viTriLamViec = nhanVien.provinceName;
     }
 
     // Mục đích sử dụng

@@ -705,7 +705,7 @@ export class ListComponent implements OnInit {
       let columns = [
         { field: 'EmployeeCode', type: 'text', isRequired: true },
         { field: 'EmployeeName', type: 'text', isRequired: true },
-        { field: 'HoTenTiengAnh', type: 'text', isRequired: true },
+        { field: 'HoTenTiengAnh', type: 'text', isRequired: false },
         { field: 'FirstName', type: 'text', isRequired: true },
         { field: 'LastName', type: 'text', isRequired: true },
         { field: 'DateOfBirth', type: 'date', isRequired: true },

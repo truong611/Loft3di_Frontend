@@ -314,7 +314,8 @@
                               (click)="showDieuKienTroCapCoDinh(rowData, col.field)">
                               <ng-container *ngIf="col.field.includes('index_') == true">
                                 <span>
-                                  {{rowData[col.field] | number}}
+                                  {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) :
+                                  rowData[col.field] }}
                                 </span>
                               </ng-container>
                               <ng-container *ngIf="col.field.includes('index_') == false">
@@ -338,6 +339,99 @@
                   </div>
                 </p-tabPanel>
                 <p-tabPanel header="Trợ cấp khác">
+                  <div class="row">
+                    <div class="col-md-9">
+                      <label>Chọn loại trợ cấp:</label>
+                      <p-multiSelect [options]="listLoaiTroCapKhac" [(ngModel)]="listSelectedLoaiTroCapKhac"
+                        [filter]="true" [resetFilterOnHide]="true" selectedItemsLabel="{0} loại trợ cấp được chọn"
+                        defaultLabel="Chọn loại trợ cấp" appendTo="body" [baseZIndex]="1031" optionLabel="categoryName"
+                        [style]="{'width': '100%'}" (keydown.enter)="$event.preventDefault()">
+                      </p-multiSelect>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="row">
+                        <div class="col-md-12">
+                          <label style="color: #fff;">Thêm trợ cấp khác:</label>
+                        </div>
+                        <div class="col-md-12">
+                          <button *ngIf="actionEdit && kyLuong?.trangThai == 1" [disabled]="awaitResult" type="button"
+                            class="btn-white" (click)="themTroCapKhac()">
+                            OK
+                          </button>
+                          <button *ngIf="actionEdit && kyLuong?.trangThai == 1" [disabled]="awaitResult" type="button"
+                            class="btn-send" (click)="importTroCapKhac()" style="margin-left: 5px;">
+                            Import
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div *ngIf="listDataTroCapKhac.length" class="col-md-12 mt-10">
+                      <p-table #myTable4 [columns]="cols4" [value]="listDataTroCapKhac" [scrollable]="true"
+                        [frozenColumns]="frozenCols4" frozenWidth="571px" [responsive]="true" [paginator]="true"
+                        [rows]="10" [rowsPerPageOptions]="[10, 20, 50]">
+                        <ng-template pTemplate="colgroup" let-columns>
+                          <colgroup>
+                            <col *ngFor="let col of columns" [style.width]="col.width">
+                          </colgroup>
+                        </ng-template>
+                        <ng-template pTemplate="frozenheader">
+                          <ng-container *ngFor="let item of trRowTroCapKhacFrozen">
+                            <tr>
+                              <ng-container *ngFor="let _item of item">
+                                <th style="text-align: center;" [attr.rowspan]="_item.rowspan != 0 ? _item.rowspan : ''"
+                                  [attr.colspan]="_item.colspan != 0 ? _item.colspan : ''"
+                                  [ngStyle]="{'width': item.width, 'height': '60px'}">
+                                  {{_item.columnValue}}
+                                </th>
+                              </ng-container>
+                            </tr>
+                          </ng-container>
+                        </ng-template>
+                        <ng-template pTemplate="header">
+                          <ng-container *ngFor="let item of trRowTroCapKhac">
+                            <tr>
+                              <ng-container *ngFor="let _item of item">
+                                <th style="text-align: center;" [attr.rowspan]="_item.rowspan != 0 ? _item.rowspan : ''"
+                                  [attr.colspan]="_item.colspan != 0 ? _item.colspan : ''"
+                                  [ngStyle]="{'width': _item.width, 'height': '60px'}">
+                                  {{_item.columnValue}}
+                                </th>
+                              </ng-container>
+                            </tr>
+                          </ng-container>
+                        </ng-template>
+
+                        <ng-template pTemplate="body" let-rowData let-columns="columns">
+                          <tr>
+                            <td *ngFor="let col of columns"
+                              [ngStyle]="{'width': col.width, 'text-align': col.textAlign}"
+                              (click)="showDieuKienTroCapKhac(rowData, col.field)">
+                              <ng-container *ngIf="col.field.includes('index_') == true">
+                                <span>
+                                  {{rowData[col.field] | number}}
+                                </span>
+                              </ng-container>
+                              <ng-container *ngIf="col.field.includes('index_') == false">
+                                <span>
+                                  {{rowData[col.field]}}
+                                </span>
+                              </ng-container>
+                            </td>
+                          </tr>
+                        </ng-template>
+                      </p-table>
+                    </div>
+                    <div *ngIf="!listDataTroCapKhac.length" class="col-md-12 mt-10 no-padding no-data">
+                      <div class="box-no-data">
+                        <img src="/assets/icons/components/box.svg" class="box-icon">
+                        <div>
+                          <span>Hiện tại không có dữ liệu</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </p-tabPanel>
+                <!-- <p-tabPanel header="Trợ cấp khác">
                   <div class="row mt-10">
                     <div class="col-md-9">
                       <label>Chọn loại trợ cấp:</label>
@@ -411,7 +505,7 @@
                               (click)="showDieuKienTroCapKhac(rowData, col.field)">
                               <ng-container *ngIf="col.field.includes('index_') == true">
                                 <span>
-                                  {{rowData[col.field] | number}}
+                                  {{rowData[col.field] > 1 ?  (rowData[col.field]  | number: '1.0-0' ) : rowData[col.field] }}
                                 </span>
                               </ng-container>
                               <ng-container *ngIf="col.field.includes('index_') == false">
@@ -433,7 +527,7 @@
                       </div>
                     </div>
                   </div>
-                </p-tabPanel>
+                </p-tabPanel> -->
                 <p-tabPanel header="Trợ cấp OT">
                   <div class="row">
                     <div *ngIf="listDataTroCapOt.length" class="col-md-12 mt-10" style="text-align: right;">
@@ -481,22 +575,26 @@
                               [ngStyle]="{'width': col.width, 'text-align': col.textAlign}">
                               <ng-container *ngIf="col.field.includes('index_') == true">
                                 <span>
-                                  {{rowData[col.field] | number}}
+                                  {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) :
+                                  rowData[col.field] }}
                                 </span>
                               </ng-container>
                               <ng-container *ngIf="col.field == 'mucLuongHienTai'">
                                 <span>
-                                  {{rowData[col.field] | number}}
+                                  {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) :
+                                  rowData[col.field] }}
                                 </span>
                               </ng-container>
                               <ng-container *ngIf="col.field == 'tongLuongOt'">
                                 <span>
-                                  {{rowData[col.field] | number}}
+                                  {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) :
+                                  rowData[col.field] }}
                                 </span>
                               </ng-container>
                               <ng-container *ngIf="col.field == 'luongOtTinhThue'">
                                 <span>
-                                  {{rowData[col.field] | number}}
+                                  {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) :
+                                  rowData[col.field] }}
                                 </span>
                               </ng-container>
                               <ng-container *ngIf="col.field.includes('index_') == false &&
@@ -557,19 +655,24 @@
                                 {{rowIndex + 1}}
                               </span>
                               <span *ngSwitchCase="'baseBhxh'">
-                                {{rowData[col.field] | number}}
+                                {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field]
+                                }}
                               </span>
                               <span *ngSwitchCase="'bhxh'">
-                                {{rowData[col.field] | number}}
+                                {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field]
+                                }}
                               </span>
                               <span *ngSwitchCase="'bhyt'">
-                                {{rowData[col.field] | number}}
+                                {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field]
+                                }}
                               </span>
                               <span *ngSwitchCase="'bhtn'">
-                                {{rowData[col.field] | number}}
+                                {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field]
+                                }}
                               </span>
                               <span *ngSwitchCase="'bhtnnn'">
-                                {{rowData[col.field] | number}}
+                                {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field]
+                                }}
                               </span>
                               <span *ngSwitchCase="'other'">
                                 <ng-container *ngIf="kyLuong?.trangThai == 1">
@@ -578,11 +681,13 @@
                                     (change)="tinhTongBaoHiem()" />
                                 </ng-container>
                                 <ng-container *ngIf="kyLuong?.trangThai != 1">
-                                  {{rowData[col.field] | number}}
+                                  {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) :
+                                  rowData[col.field] }}
                                 </ng-container>
                               </span>
                               <span *ngSwitchCase="'sum'">
-                                {{rowData[col.field] | number}}
+                                {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field]
+                                }}
                               </span>
                               <span *ngSwitchDefault>
                                 {{rowData[col.field]}}
@@ -643,7 +748,8 @@
                                     (change)="tinhTongThuNhapTinhThue()" />
                                 </ng-container>
                                 <ng-container *ngIf="kyLuong?.trangThai != 1">
-                                  {{rowData[col.field] | number}}
+                                  {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) :
+                                  rowData[col.field] }}
                                 </ng-container>
                               </span>
                               <span *ngSwitchCase="'month13'">
@@ -653,7 +759,8 @@
                                     (change)="tinhTongThuNhapTinhThue()" />
                                 </ng-container>
                                 <ng-container *ngIf="kyLuong?.trangThai != 1">
-                                  {{rowData[col.field] | number}}
+                                  {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) :
+                                  rowData[col.field] }}
                                 </ng-container>
                               </span>
                               <span *ngSwitchCase="'gift'">
@@ -663,7 +770,8 @@
                                     (change)="tinhTongThuNhapTinhThue()" />
                                 </ng-container>
                                 <ng-container *ngIf="kyLuong?.trangThai != 1">
-                                  {{rowData[col.field] | number}}
+                                  {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) :
+                                  rowData[col.field] }}
                                 </ng-container>
                               </span>
                               <span *ngSwitchCase="'other'">
@@ -673,11 +781,13 @@
                                     (change)="tinhTongThuNhapTinhThue()" />
                                 </ng-container>
                                 <ng-container *ngIf="kyLuong?.trangThai != 1">
-                                  {{rowData[col.field] | number}}
+                                  {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) :
+                                  rowData[col.field] }}
                                 </ng-container>
                               </span>
                               <span *ngSwitchCase="'sum'">
-                                {{rowData[col.field] | number}}
+                                {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field]
+                                }}
                               </span>
                               <span *ngSwitchDefault>
                                 {{rowData[col.field]}}
@@ -732,13 +842,16 @@
                                 {{rowIndex + 1}}
                               </span>
                               <span *ngSwitchCase="'giamTruCaNhan'">
-                                {{rowData[col.field] | number}}
+                                {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field]
+                                }}
                               </span>
                               <span *ngSwitchCase="'giamTruNguoiPhuThuoc'">
-                                {{rowData[col.field] | number}}
+                                {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field]
+                                }}
                               </span>
                               <span *ngSwitchCase="'tienDongBaoHiem'">
-                                {{rowData[col.field] | number}}
+                                {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field]
+                                }}
                               </span>
                               <span *ngSwitchCase="'giamTruKhac'">
                                 <ng-container *ngIf="kyLuong?.trangThai == 1">
@@ -747,11 +860,13 @@
                                     (change)="tinhTongGiamTruTruocThue()" />
                                 </ng-container>
                                 <ng-container *ngIf="kyLuong?.trangThai != 1">
-                                  {{rowData[col.field] | number}}
+                                  {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) :
+                                  rowData[col.field] }}
                                 </ng-container>
                               </span>
                               <span *ngSwitchCase="'sum'">
-                                {{rowData[col.field] | number}}
+                                {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field]
+                                }}
                               </span>
                               <span *ngSwitchDefault>
                                 {{rowData[col.field]}}
@@ -806,7 +921,8 @@
                                 {{rowIndex + 1}}
                               </span>
                               <span *ngSwitchCase="'kinhPhiCongDoan'">
-                                {{rowData[col.field] | number}}
+                                {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field]
+                                }}
                               </span>
                               <span *ngSwitchCase="'quyetToanThueTncn'">
                                 <ng-container *ngIf="kyLuong?.trangThai == 1">
@@ -815,7 +931,8 @@
                                     (change)="tinhTongGiamTruSauThue()" />
                                 </ng-container>
                                 <ng-container *ngIf="kyLuong?.trangThai != 1">
-                                  {{rowData[col.field] | number}}
+                                  {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) :
+                                  rowData[col.field] }}
                                 </ng-container>
                               </span>
                               <span *ngSwitchCase="'other'">
@@ -825,11 +942,13 @@
                                     (change)="tinhTongGiamTruSauThue()" />
                                 </ng-container>
                                 <ng-container *ngIf="kyLuong?.trangThai != 1">
-                                  {{rowData[col.field] | number}}
+                                  {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) :
+                                  rowData[col.field] }}
                                 </ng-container>
                               </span>
                               <span *ngSwitchCase="'sum'">
-                                {{rowData[col.field] | number}}
+                                {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field]
+                                }}
                               </span>
                               <span *ngSwitchDefault>
                                 {{rowData[col.field]}}
@@ -890,7 +1009,8 @@
                                     (change)="tinhTongHoanLaiSauThue()" />
                                 </ng-container>
                                 <ng-container *ngIf="kyLuong?.trangThai != 1">
-                                  {{rowData[col.field] | number}}
+                                  {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) :
+                                  rowData[col.field] }}
                                 </ng-container>
                               </span>
                               <span *ngSwitchCase="'other'">
@@ -900,11 +1020,13 @@
                                     (change)="tinhTongHoanLaiSauThue()" />
                                 </ng-container>
                                 <ng-container *ngIf="kyLuong?.trangThai != 1">
-                                  {{rowData[col.field] | number}}
+                                  {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) :
+                                  rowData[col.field] }}
                                 </ng-container>
                               </span>
                               <span *ngSwitchCase="'sum'">
-                                {{rowData[col.field] | number}}
+                                {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field]
+                                }}
                               </span>
                               <span *ngSwitchDefault>
                                 {{rowData[col.field]}}
@@ -959,22 +1081,28 @@
                                 {{rowIndex + 1}}
                               </span>
                               <span *ngSwitchCase="'baseBhxh'">
-                                {{rowData[col.field] | number}}
+                                {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field]
+                                }}
                               </span>
                               <span *ngSwitchCase="'bhxh'">
-                                {{rowData[col.field] | number}}
+                                {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field]
+                                }}
                               </span>
                               <span *ngSwitchCase="'bhyt'">
-                                {{rowData[col.field] | number}}
+                                {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field]
+                                }}
                               </span>
                               <span *ngSwitchCase="'bhtn'">
-                                {{rowData[col.field] | number}}
+                                {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field]
+                                }}
                               </span>
                               <span *ngSwitchCase="'bhtnnn'">
-                                {{rowData[col.field] | number}}
+                                {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field]
+                                }}
                               </span>
                               <span *ngSwitchCase="'kinhPhiCongDoan'">
-                                {{rowData[col.field] | number}}
+                                {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field]
+                                }}
                               </span>
                               <span *ngSwitchCase="'other'">
                                 <ng-container *ngIf="kyLuong?.trangThai == 1">
@@ -983,7 +1111,8 @@
                                     (change)="tinhTongCtyDong()" />
                                 </ng-container>
                                 <ng-container *ngIf="kyLuong?.trangThai != 1">
-                                  {{rowData[col.field] | number}}
+                                  {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) :
+                                  rowData[col.field] }}
                                 </ng-container>
                               </span>
                               <span *ngSwitchCase="'fundOct'">
@@ -993,11 +1122,13 @@
                                     (change)="tinhTongCtyDong()" />
                                 </ng-container>
                                 <ng-container *ngIf="kyLuong?.trangThai != 1">
-                                  {{rowData[col.field] | number}}
+                                  {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) :
+                                  rowData[col.field] }}
                                 </ng-container>
                               </span>
                               <span *ngSwitchCase="'sum'">
-                                {{rowData[col.field] | number}}
+                                {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field]
+                                }}
                               </span>
                               <span *ngSwitchDefault>
                                 {{rowData[col.field]}}
@@ -1058,7 +1189,8 @@
                                     (change)="tinhTongOther()" />
                                 </ng-container>
                                 <ng-container *ngIf="kyLuong?.trangThai != 1">
-                                  {{rowData[col.field] | number}}
+                                  {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) :
+                                  rowData[col.field] }}
                                 </ng-container>
                               </span>
                               <span *ngSwitchCase="'troCapKhacKhongTinhThue'">
@@ -1068,7 +1200,8 @@
                                     (change)="tinhTongOther()" />
                                 </ng-container>
                                 <ng-container *ngIf="kyLuong?.trangThai != 1">
-                                  {{rowData[col.field] | number}}
+                                  {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) :
+                                  rowData[col.field] }}
                                 </ng-container>
                               </span>
                               <span *ngSwitchCase="'khauTruHoanLaiTruocThue'">
@@ -1078,7 +1211,8 @@
                                     (change)="tinhTongOther()" />
                                 </ng-container>
                                 <ng-container *ngIf="kyLuong?.trangThai != 1">
-                                  {{rowData[col.field] | number}}
+                                  {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) :
+                                  rowData[col.field] }}
                                 </ng-container>
                               </span>
                               <span *ngSwitchCase="'luongTamUng'">
@@ -1088,7 +1222,8 @@
                                     (change)="tinhTongOther()" />
                                 </ng-container>
                                 <ng-container *ngIf="kyLuong?.trangThai != 1">
-                                  {{rowData[col.field] | number}}
+                                  {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) :
+                                  rowData[col.field] }}
                                 </ng-container>
                               </span>
                               <span *ngSwitchDefault>
@@ -1150,94 +1285,94 @@
                         {{rowIndex + 1}}
                       </span>
                       <span *ngSwitchCase="'tongNgayTinhLuong'">
-                        {{rowData[col.field] | number}}
+                        {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
                       </span>
                       <span *ngSwitchCase="'mucLuongCu'">
-                        {{rowData[col.field] | number}}
+                        {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
                       </span>
                       <span *ngSwitchCase="'soNgayMucLuongCu'">
-                        {{rowData[col.field] | number}}
+                        {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
                       </span>
                       <span *ngSwitchCase="'mucLuongHienTai'">
-                        {{rowData[col.field] | number}}
+                        {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
                       </span>
                       <span *ngSwitchCase="'luongThucTe'">
-                        {{rowData[col.field] | number}}
+                        {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
                       </span>
                       <span *ngSwitchCase="'khoanBuTruThangTruoc'">
-                        {{rowData[col.field] | number}}
+                        {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
                       </span>
                       <span *ngSwitchCase="'luongOtTinhThue'">
-                        {{rowData[col.field] | number}}
+                        {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
                       </span>
                       <span *ngSwitchCase="'luongOtKhongTinhThue'">
-                        {{rowData[col.field] | number}}
+                        {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
                       </span>
                       <span *ngSwitchCase="'tongTroCapCoDinh'">
-                        {{rowData[col.field] | number}}
+                        {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
                       </span>
                       <span *ngSwitchCase="'tongTroCapKhac'">
-                        {{rowData[col.field] | number}}
+                        {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
                       </span>
                       <span *ngSwitchCase="'troCapKhacKhongTinhThue'">
-                        {{rowData[col.field] | number}}
+                        {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
                       </span>
                       <span *ngSwitchCase="'khauTruHoanLaiTruocThue'">
-                        {{rowData[col.field] | number}}
+                        {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
                       </span>
                       <span *ngSwitchCase="'tongThuNhapBaoGomThueVaKhongThue'">
-                        {{rowData[col.field] | number}}
+                        {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
                       </span>
                       <span *ngSwitchCase="'tongThuNhapSauKhiBoCacKhoanKhongTinhThue'">
-                        {{rowData[col.field] | number}}
+                        {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
                       </span>
                       <span *ngSwitchCase="'giamTruTruocThue'">
-                        {{rowData[col.field] | number}}
+                        {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
                       </span>
                       <span *ngSwitchCase="'thuNhapChiDuaVaoTinhThue'">
-                        {{rowData[col.field] | number}}
+                        {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
                       </span>
                       <span *ngSwitchCase="'tongThuNhapChiuThueSauGiamTru'">
-                        {{rowData[col.field] | number}}
+                        {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
                       </span>
                       <span *ngSwitchCase="'tongThueTncnCtyVaNld'">
-                        {{rowData[col.field] | number}}
+                        {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
                       </span>
                       <span *ngSwitchCase="'thueTncnNld'">
-                        {{rowData[col.field] | number}}
+                        {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
                       </span>
                       <span *ngSwitchCase="'luongCoBanDongBh'">
-                        {{rowData[col.field] | number}}
+                        {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
                       </span>
                       <span *ngSwitchCase="'tongTienBhNldPhaiDong'">
-                        {{rowData[col.field] | number}}
+                        {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
                       </span>
                       <span *ngSwitchCase="'tongTienBhCtyPhaiDong'">
-                        {{rowData[col.field] | number}}
+                        {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
                       </span>
                       <span *ngSwitchCase="'thuNhapThucNhanTruocKhiBuTruThue'">
-                        {{rowData[col.field] | number}}
+                        {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
                       </span>
                       <span *ngSwitchCase="'cacKhoanGiamTruSauThue'">
-                        {{rowData[col.field] | number}}
+                        {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
                       </span>
                       <span *ngSwitchCase="'cacKhoanHoanLaiSauThue'">
-                        {{rowData[col.field] | number}}
+                        {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
                       </span>
                       <span *ngSwitchCase="'thuNhapThucNhan'">
-                        {{rowData[col.field] | number}}
+                        {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
                       </span>
                       <span *ngSwitchCase="'luongTamUng'">
-                        {{rowData[col.field] | number}}
+                        {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
                       </span>
                       <span *ngSwitchCase="'luongConLai'">
-                        {{rowData[col.field] | number}}
+                        {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
                       </span>
                       <span *ngSwitchCase="'cacKhoanCtyPhaiTraKhac'">
-                        {{rowData[col.field] | number}}
+                        {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
                       </span>
                       <span *ngSwitchCase="'tongChiPhiCtyPhaiTra'">
-                        {{rowData[col.field] | number}}
+                        {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
                       </span>
                       <span *ngSwitchDefault>
                         {{rowData[col.field]}}
@@ -1354,16 +1489,10 @@
   <div class="row no-margin">
     <div class="col-md-12 mt-10">
       <label>Chọn loại báo cáo<span class="required">*</span>:</label>
-
       <p-multiSelect [options]="listBaoCao" [(ngModel)]="baoCaoNumber" class="w-100" [filter]="true"
         [resetFilterOnHide]="true" selectedItemsLabel="{0} loại báo cáo được chọn" defaultLabel="Chọn loại báo cáo"
         appendTo="body" optionLabel="name" [style]="{'width': '100%'}" (keydown.enter)="$event.preventDefault()">
       </p-multiSelect>
-
-      <!-- <p-dropdown [options]="listBaoCao" [virtualScroll]="true" itemSize="30" [(ngModel)]="baoCaoNumber" class="w-100"
-        [filter]="true" [showClear]="true" [resetFilterOnHide]="true" placeholder="Chọn loại báo cáo" optionLabel="name"
-        [style]="{'width': '100%'}" appendTo="body">
-      </p-dropdown> -->
     </div>
 
     <div class="col-md-12" style="text-align: right; margin: 20px 0px;">

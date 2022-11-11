@@ -153,6 +153,10 @@ export class ChamCongThuongComponent implements OnInit {
 
         this.listData = [...this.listData, dataRow];
       });
+      this.listData = this.listData.sort(function (a, b) { return a.code - b.code });
+      this.listData.filter((e, index) => {
+        e.stt = index + 1
+      })
     }
   }
 
@@ -187,7 +191,7 @@ export class ChamCongThuongComponent implements OnInit {
 
   changeKyHieu(item: any) {
     if (!this.actionEdit) return;
-    
+
     // Nếu chọn ngày
     if (item.columnKey.includes('index_ngay_')) {
       let ngay = this.getNgay(item.columnValue);

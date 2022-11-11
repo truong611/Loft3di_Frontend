@@ -251,6 +251,54 @@
           </div>
         </div>
       </div>
+
+      <!-- Mức đóng cho bảo hiểm TN -->
+      <div class="col-md-12" style="margin-top: 20px">
+        <span>Mức đóng bảo hiểm tai nạn:</span>
+      </div>
+
+      <div class="col-md-12 mt-10">
+        <div class="row">
+
+          <div class="col-md-3">
+            <div class="row">
+              <div class="col-md-12">
+                <span>Mức đóng tối thiểu:</span><span class="required">*</span>
+              </div>
+              <div class="col-md-12">
+                <input type="text" class="number-input" formControlName="mucLuongCoSoBHTNControl"
+                  [cleave]="{numeral: true, numeralPositiveOnly: true, numeralDecimalScale: '2'}" [ngClass]="{ 'error-border' : (mucLuongCoSoBHTNControl.invalid && (mucLuongCoSoBHTNControl.dirty || mucLuongCoSoBHTNControl.touched)),
+                  'input-disable': mucLuongCoSoBHTNControl.disabled }" />
+              </div>
+              <div class="col-md-12" [hidden]="mucLuongCoSoBHTNControl.valid">
+                <span *ngIf="mucLuongCoSoBHTNControl.hasError('required')" class="error-message-span">
+                  Không được để trống
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div class="row">
+              <div class="col-md-12">
+                <span>Mức đóng tối đa:</span><span class="required">*</span>
+              </div>
+              <div class="col-md-12">
+                <input type="text" class="number-input" formControlName="mucDongToiDaBHTNControl"
+                  [cleave]="{numeral: true, numeralPositiveOnly: true, numeralDecimalScale: '2'}" [ngClass]="{ 'error-border' : (mucDongToiDaBHTNControl.invalid && (mucDongToiDaBHTNControl.dirty || mucDongToiDaBHTNControl.touched)),
+                  'input-disable': mucDongToiDaBHTNControl.disabled }" />
+              </div>
+              <div class="col-md-12" [hidden]="mucDongToiDaBHTNControl.valid">
+                <span *ngIf="mucDongToiDaBHTNControl.hasError('required')" class="error-message-span">
+                  Không được để trống
+                </span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
     </div>
   </div>
 </div>

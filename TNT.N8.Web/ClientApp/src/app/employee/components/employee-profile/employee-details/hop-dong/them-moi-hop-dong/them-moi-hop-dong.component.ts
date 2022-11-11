@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { MessageService} from 'primeng/api';
-import { FormGroup, FormControl, Validators} from '@angular/forms';
+import { MessageService } from 'primeng/api';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { DynamicDialogRef, DynamicDialogConfig, DialogService } from 'primeng/dynamicdialog';
 
 import { EmployeeService } from './../../../../../services/employee.service';
@@ -53,7 +53,7 @@ export class ThemMoiHopDongComponent implements OnInit {
     this.hopDongNhanSu = this.data.data.hopDongNhanSu;
 
     this.initForm();
-    if(!this.isAdd) {
+    if (!this.isAdd) {
       this.setForm();
     }
   }
@@ -62,7 +62,7 @@ export class ThemMoiHopDongComponent implements OnInit {
     this.hopDongForm = new FormGroup({
       loaiHopDong: new FormControl('', [Validators.required]),
       soHopDong: new FormControl('', [Validators.required, forbiddenSpaceText]),
-      soPhuLuc: new FormControl('', [Validators.required, forbiddenSpaceText]),
+      soPhuLuc: new FormControl('', [forbiddenSpaceText]),
       ngayKyHopDong: new FormControl('', [Validators.required]),
       ngayBatDauLamViec: new FormControl('', [Validators.required]),
       ngayKetThucHopDong: new FormControl(''),
@@ -83,7 +83,7 @@ export class ThemMoiHopDongComponent implements OnInit {
       mucLuong: this.hopDongNhanSu?.mucLuong,
     })
 
-    if(this.hopDongNhanSu.isPhatSinhKyLuong) {
+    if (this.hopDongNhanSu.isPhatSinhKyLuong) {
       this.hopDongForm.get('ngayKyHopDong').disable();
       this.hopDongForm.get('position').disable();
       this.hopDongForm.get('mucLuong').disable();
@@ -120,9 +120,9 @@ export class ThemMoiHopDongComponent implements OnInit {
         this.error['soHopDong'] = 'Không được để trống';
       }
 
-      if (this.hopDongForm.get('soPhuLuc').errors?.required || this.hopDongForm.get('soPhuLuc').errors?.forbiddenSpaceText) {
-        this.error['soPhuLuc'] = 'Không được để trống';
-      }
+      // if (this.hopDongForm.get('soPhuLuc').errors?.required || this.hopDongForm.get('soPhuLuc').errors?.forbiddenSpaceText) {
+      //   this.error['soPhuLuc'] = 'Không được để trống';
+      // }
 
       if (this.hopDongForm.get('ngayKyHopDong').errors?.required) {
         this.error['ngayKyHopDong'] = 'Không được để trống';
@@ -165,13 +165,13 @@ export class ThemMoiHopDongComponent implements OnInit {
       employeeId: this.employeeId
     };
 
-    if(!this.isAdd) {
-      dataInput = {...dataInput, hopDongNhanSuId: this.hopDongNhanSu.hopDongNhanSuId}
+    if (!this.isAdd) {
+      dataInput = { ...dataInput, hopDongNhanSuId: this.hopDongNhanSu.hopDongNhanSuId }
     }
 
     this.loading = true;
     let result: any;
-    if(this.isAdd) {
+    if (this.isAdd) {
       result = await this.employeeService.createHopDongNhanSu(dataInput);
     } else {
       result = await this.employeeService.updateHopDongNhanSu(dataInput);

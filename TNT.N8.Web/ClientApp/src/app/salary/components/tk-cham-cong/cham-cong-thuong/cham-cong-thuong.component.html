@@ -50,7 +50,7 @@
           </ng-container>
         </ng-template>
 
-        <ng-template pTemplate="frozenheader" >
+        <ng-template pTemplate="frozenheader">
           <ng-container *ngFor="let item of trRowFrozen">
             <tr>
               <ng-container *ngFor="let _item of item">
@@ -93,8 +93,8 @@
                   {{rowData[col.field] | number}}
                 </span>
               </ng-container>
-              <ng-container *ngIf="col.field.includes('index_') == false && 
-                col.field != 'soPhutDmvs' && 
+              <ng-container *ngIf="col.field.includes('index_') == false &&
+                col.field != 'soPhutDmvs' &&
                 col.field != 'soNgayDmvs' &&
                 col.field != 'soNgayNghi' &&
                 col.field != 'soLanDmvs'">

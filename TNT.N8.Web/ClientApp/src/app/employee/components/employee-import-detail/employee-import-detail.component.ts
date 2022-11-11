@@ -312,7 +312,7 @@ export class EmployeeImportDetailComponent implements OnInit {
     this.columns = [
       { field: 'EmployeeCode', header: 'Mã nhân viên', textAlign: 'left', display: 'table-cell', width: '150px', type: 'text', isRequired: true, isList: false },
       { field: 'EmployeeName', header: 'Họ tên tiếng Việt', textAlign: 'left', display: 'table-cell', width: '150px', type: 'text', isRequired: true, isList: false },
-      { field: 'HoTenTiengAnh', header: 'Họ và tên tiếng Anh', textAlign: 'left', display: 'table-cell', width: '150px', type: 'text', isRequired: true, isList: false },
+      { field: 'HoTenTiengAnh', header: 'Họ và tên tiếng Anh', textAlign: 'left', display: 'table-cell', width: '150px', type: 'text', isRequired: false, isList: false },
       { field: 'FirstName', header: 'First Name', textAlign: 'center', display: 'table-cell', width: '120px', type: 'text', isRequired: true, isList: false },
       { field: 'LastName', header: 'Last Name', textAlign: 'center', display: 'table-cell', width: '100px', type: 'text', isRequired: true, isList: false },
       { field: 'DateOfBirth', header: 'Ngày tháng năm sinh', textAlign: 'center', display: 'table-cell', width: '100px', type: 'date', isRequired: true, isList: false },
@@ -427,7 +427,7 @@ export class EmployeeImportDetailComponent implements OnInit {
     this.listPhone = this.listTaiSanImport.map(x => x.Phone.toUpperCase().trim());
     this.listEmail = this.listTaiSanImport.map(x => x.Email.toUpperCase().trim());
     this.listCodeMayChamCong = this.listTaiSanImport.map(x => x.CodeMayChamCong.toUpperCase().trim());
-    
+
     this.listTaiSanImport.forEach(employee => {
       employee.listStatus = [];
       employee.isValid = true;
@@ -520,10 +520,10 @@ export class EmployeeImportDetailComponent implements OnInit {
         employee.isValid = false;
       }
 
-      if (!employee?.HoTenTiengAnh.trim()) {
-        employee.listStatus = [...employee.listStatus, this.listNote.find(e => e.code == "required_nameTA")];
-        employee.isValid = false;
-      }
+      // if (!employee?.HoTenTiengAnh.trim()) {
+      //   employee.listStatus = [...employee.listStatus, this.listNote.find(e => e.code == "required_nameTA")];
+      //   employee.isValid = false;
+      // }
 
       if (!employee?.FirstName.trim()) {
         employee.listStatus = [...employee.listStatus, this.listNote.find(e => e.code == "required_firstName")];
