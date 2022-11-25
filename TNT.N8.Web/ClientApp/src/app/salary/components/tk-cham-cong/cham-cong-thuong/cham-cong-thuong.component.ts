@@ -41,6 +41,11 @@ export class ChamCongThuongComponent implements OnInit {
   ];
   tuNgay: Date = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
   denNgay: Date = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
+  listOption: Array<any> = [
+    { value: 1, name: 'Đi muộn về sớm' },
+    { value: 2, name: 'Chấm công thiếu ca' },
+  ];
+  listSelectedOption: Array<any> = [];
 
   @ViewChild('myTable') myTable: Table;
   filterGlobal: string = null;
@@ -95,11 +100,13 @@ export class ChamCongThuongComponent implements OnInit {
       return;
     }
 
+    let listOption = this.listSelectedOption.map(x => x.value);
+
     this.selectedRow = null;
 
     this.loading = true;
     this.awaitResponse = true;
-    let result: any = await this.salaryService.getTkDiMuonVeSom(tuNgay, denNgay, listEmployeeId, isShowOption);
+    let result: any = await this.salaryService.getTkDiMuonVeSom(tuNgay, denNgay, listEmployeeId, isShowOption, listOption);
     this.loading = false;
     this.awaitResponse = false;
 
@@ -552,6 +559,7 @@ export class ChamCongThuongComponent implements OnInit {
     this.denNgay = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
     this.listSelectedEmployee = [];
     this.listSelectedDieuKienHienThi = [this.listDieuKienHienThi.find(x => x.value == 1)];
+    this.listSelectedOption = [];
 
     this.getData();
   }

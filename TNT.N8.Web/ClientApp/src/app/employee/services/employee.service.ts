@@ -1453,7 +1453,6 @@ export class EmployeeService {
     formData.append("DeXuatTangLuong.NgayDeXuat", dexuat.NgayDeXuat == null ? null : new Date(dexuat.NgayDeXuat).toUTCString());
     formData.append("DeXuatTangLuong.NguoiDeXuatId", dexuat.NguoiDeXuatId);
     formData.append("DeXuatTangLuong.TrangThai", dexuat.TrangThai);
-    console.log("nhanviendexuat", nhanviendexuat)
 
     var index1 = 0;
     for (var nvien of nhanviendexuat) {
@@ -1626,7 +1625,6 @@ export class EmployeeService {
       formData.append("DeXuatTangLuong.NgayDeXuat", dexuat.NgayDeXuat == null ? null : new Date(dexuat.NgayDeXuat).toUTCString());
       formData.append("DeXuatTangLuong.NguoiDeXuatId", dexuat.NguoiDeXuatId);
       formData.append("DeXuatTangLuong.TrangThai", dexuat.TrangThai);
-      console.log("nhanviendexuat", nhanviendexuat)
 
       var index1 = 0;
       for (var nvien of nhanviendexuat) {
@@ -1982,14 +1980,12 @@ export class EmployeeService {
       let formData: FormData = new FormData();
       formData.append("FolderType", folderType);
       formData.append("UserId", this.userId);
-      console.log(dexuat)
       formData.append("DeXuatChucVu.DeXuatThayDoiChucVuId", dexuat.deXuatThayDoiChucVuId);
       formData.append("DeXuatChucVu.TenDeXuat", dexuat.tenDeXuat);
       formData.append("DeXuatChucVu.LoaiDeXuat", dexuat.loaiDeXuat);
       formData.append("DeXuatChucVu.NgayDeXuat", dexuat.ngayDeXuat == null ? null : new Date(dexuat.ngayDeXuat).toUTCString());
       formData.append("DeXuatChucVu.NguoiDeXuatId", dexuat.nguoiDeXuatId);
       formData.append("DeXuatChucVu.TrangThai", dexuat.trangThai);
-      console.log("nhanviendexuat", nhanviendexuat)
 
 
 
@@ -2065,10 +2061,7 @@ export class EmployeeService {
 
 
   pheDuyetNhanSuDangKyOT(listIdPheDuyet, ListAllNV: any, OrganizationId: any, KeHoachOtId: any) {
-    console.log(listIdPheDuyet)
-    console.log(ListAllNV)
-    console.log(OrganizationId)
-    console.log(KeHoachOtId)
+
     const url = localStorage.getItem('ApiEndPoint') + '/api/employee/pheDuyetNhanSuDangKyOT';
     return this.httpClient.post(url, {
       ListNvPheDuyetID: listIdPheDuyet,
@@ -2163,9 +2156,7 @@ export class EmployeeService {
   }
 
   GetlistDeXuatCongTac(nguoiDeXuatId, thoiGianDeXuat, trangThai) {
-    console.log("1", nguoiDeXuatId)
-    console.log("2", thoiGianDeXuat)
-    console.log("3", trangThai)
+
     const currentUser = <any>localStorage.getItem('auth');
     const url = localStorage.getItem('ApiEndPoint') + '/api/employee/ListDeXuatTangLuong';
     return this.httpClient.post(url, {
@@ -2245,7 +2236,6 @@ export class EmployeeService {
   }
 
   createCauHinhDanhGia(data: any) {
-    console.log("data", data)
     const url = localStorage.getItem('ApiEndPoint') + '/api/employee/createCauHinhDanhGia';
     return new Promise((resolve, reject) => {
       return this.httpClient.post(url, {
@@ -2292,7 +2282,6 @@ export class EmployeeService {
   }
 
   deleteCauHinhDanhGia(data: any) {
-    console.log("data", data)
     const url = localStorage.getItem('ApiEndPoint') + '/api/employee/deleteCauHinhDanhGia';
     return new Promise((resolve, reject) => {
       return this.httpClient.post(url, {
@@ -2420,15 +2409,12 @@ export class EmployeeService {
       indexFile++;
     }
 
-    console.log(formData)
 
     return this.httpClient.post(url, formData).pipe(map((response: Response) => {
       return response;
     }));
   }
   updateCauHinhDanhGia(listMucDanhGia: any, mucDanhGiaId: any) {
-    console.log("data:", listMucDanhGia)
-    console.log("mucDanhGiaId", mucDanhGiaId)
     const url = localStorage.getItem('ApiEndPoint') + '/api/employee/updateCauHinhDanhGia';
     return new Promise((resolve, reject) => {
       return this.httpClient.post(url, {
@@ -2560,8 +2546,6 @@ export class EmployeeService {
       formData.append("ListFile[" + indexFile + "].FileSave", file.FileSave);
       indexFile++;
     }
-
-    console.log(formData)
 
     return this.httpClient.post(url, formData).pipe(map((response: Response) => {
       return response;
@@ -3041,10 +3025,12 @@ export class EmployeeService {
     });
   }
 
-  downloadTemplateImportHDNS() {
+  downloadTemplateImportHDNS(number: Number) {
     let url = localStorage.getItem('ApiEndPoint') + "/api/employee/downloadTemplateImportHDNS";
     return new Promise((resolve, rejecr) => {
-      return this.httpClient.post(url, {}).toPromise()
+      return this.httpClient.post(url, {
+        Number: number
+      }).toPromise()
         .then((response: Response) => {
           resolve(response);
         });
@@ -3066,6 +3052,60 @@ export class EmployeeService {
     return new Promise((resolve, reject) => {
       return this.httpClient.post(url, {
         ListHopDong: listHopDong,
+      }).toPromise()
+        .then((response: Response) => {
+          resolve(response);
+        });
+    });
+  }
+
+  changeNgayNopTaiLieu(employeeId: any, ngayNop: any, ngayHenNop: any) {
+    let url = localStorage.getItem('ApiEndPoint') + "/api/employee/changeNgayNopTaiLieu";
+    return new Promise((resolve, rejecr) => {
+      return this.httpClient.post(url, {
+        employeeId: employeeId,
+        ngayNop: ngayNop,
+        ngayHenNop: ngayHenNop
+      }).toPromise()
+        .then((response: Response) => {
+          resolve(response);
+        });
+    });
+  }
+
+  changeDaNop(employeeId: any, taiLieuNhanVienId: any, cauHinhChecklistId: any, isDaNop: any) {
+    let url = localStorage.getItem('ApiEndPoint') + "/api/employee/changeDaNop";
+    return new Promise((resolve, rejecr) => {
+      return this.httpClient.post(url, {
+        employeeId: employeeId,
+        taiLieuNhanVienId: taiLieuNhanVienId,
+        cauHinhChecklistId: cauHinhChecklistId,
+        isDaNop: isDaNop
+      }).toPromise()
+        .then((response: Response) => {
+          resolve(response);
+        });
+    });
+  }
+
+  importThongTinGiaDinh(listEmp) {
+    const url = localStorage.getItem('ApiEndPoint') + '/api/employee/importThongTinGiaDinh';
+    return new Promise((resolve, reject) => {
+      return this.httpClient.post(url, {
+        ThongTinGiaDinh: listEmp,
+      }).toPromise()
+        .then((response: Response) => {
+          resolve(response);
+        });
+    });
+  }
+
+  checkPhongBanTaoKyDanhGia(listOrgId, orgAddId) {
+    const url = localStorage.getItem('ApiEndPoint') + '/api/employee/checkPhongBanTaoKyDanhGia';
+    return new Promise((resolve, reject) => {
+      return this.httpClient.post(url, {
+        OrgAddId: orgAddId,
+        ListOrgId: listOrgId,
       }).toPromise()
         .then((response: Response) => {
           resolve(response);

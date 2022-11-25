@@ -138,14 +138,15 @@ export class SalaryService {
     });
   }
 
-  getTkDiMuonVeSom(tuNgay: any, denNgay: any, listEmployeeId: any, isShowOption: any) {
+  getTkDiMuonVeSom(tuNgay: any, denNgay: any, listEmployeeId: any, isShowOption: any, listOption: Array<number>) {
     const url = localStorage.getItem('ApiEndPoint') + '/api/salary/getTkDiMuonVeSom';
     return new Promise((resolve, reject) => {
       return this.httpClient.post(url, {
         tuNgay: tuNgay,
         denNgay: denNgay,
         listEmployeeId: listEmployeeId,
-        isShowOption: isShowOption
+        isShowOption: isShowOption,
+        listOption: listOption
       }).toPromise()
         .then((response: Response) => {
           resolve(response);
@@ -675,6 +676,18 @@ export class SalaryService {
     return new Promise((resolve, reject) => {
       return this.httpClient.post(url, {
         KyLuongId: KyLuongId,
+      }).toPromise()
+        .then((response: Response) => {
+          resolve(response);
+        });
+    });
+  }
+
+  downloadTemplateImport(type: number) {
+    const url = localStorage.getItem('ApiEndPoint') + '/api/salary/downloadTemplateImport';
+    return new Promise((resolve, reject) => {
+      return this.httpClient.post(url, {
+        type: type,
       }).toPromise()
         .then((response: Response) => {
           resolve(response);

@@ -171,7 +171,6 @@ export class DanhSachDeNghiTamUngComponent implements OnInit {
       { field: 'nguoiDeXuat', header: 'Người đề nghị', width: '200px', textAlign: 'left', color: '#f44336' },
       { field: 'nguoiThuHuong', header: 'Người thụ hưởng', width: '200px', textAlign: 'left', color: '#f44336' },
       { field: 'ngayDeNghi', header: 'Ngày đề nghị', width: '150px', textAlign: 'center', color: '#f44336' },
-      { field: 'tienTamUng', header: 'Chi phí tạm ứng', width: '150px', textAlign: 'right', color: '#f44336' },
       { field: 'tongTienThanhToan', header: 'Tổng chi phí', width: '150px', textAlign: 'right', color: '#f44336' },
       { field: 'trangThaiString', header: 'Trạng thái', width: '100px', textAlign: 'center', color: '#f44336' },
     ];

@@ -244,8 +244,9 @@ export class DanhSachCapPhatListComponent implements OnInit {
       var result = <any>response;
       this.loading = false;
       if (result.statusCode == 200) {
-        this.listYeuCauCapPhat = result.listYeuCauCapPhatTaiSan;
+        // this.listYeuCauCapPhat = result.listYeuCauCapPhatTaiSan;
         this.listEmployee = result.listEmployee;
+        this.searchYeuCauCP();
       }
     });
   }

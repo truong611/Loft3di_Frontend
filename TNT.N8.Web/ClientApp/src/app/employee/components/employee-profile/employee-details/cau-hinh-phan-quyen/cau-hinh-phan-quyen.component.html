@@ -26,9 +26,9 @@
     <p-fieldset>
       <p-header>Phân quyền phê duyệt</p-header>
       <div class="row mt-10 mb-10">
-        <!-- <div class="col-md-12" style="margin-left: 10px;">
+        <div class="col-md-12" style="margin-left: 10px;">
           <span *ngIf="isEdit" class="hyperlink" (click)="openOrgPopup()">Chọn đơn vị >></span>
-        </div> -->
+        </div>
         <div class="col-md-12 mt-20">
           <p-table [columns]="cols" [value]="listSelectedDonVi" [paginator]="true" [rows]="5" class="table-border">
             <ng-template pTemplate="header" let-columns>
@@ -37,6 +37,7 @@
                 <th style="width: 15%; text-align: center;">Trưởng bộ phận</th>
                 <!-- <th style="width: 15%; text-align: center;">Người theo dõi</th> -->
                 <th style="width: 15%; text-align: center;">Nhân viên</th>
+                <th style="width: 15%; text-align: center;">Phòng ban chính</th>
                 <!-- <th style="width: 15%; text-align: center;">Thao tác</th> -->
               </tr>
             </ng-template>
@@ -60,6 +61,10 @@
                     <p-radioButton [attr.name]="'groupname' + ri" value="0" [disabled]="!isEdit"
                       [(ngModel)]="rowData.isManager" [ngModelOptions]="{standalone: true}">
                     </p-radioButton>
+                  </span>
+                  <span *ngSwitchCase="'isPhongBanChinh'">
+                    <p-checkbox [(ngModel)]="rowData.isPhongBanChinh" [ngModelOptions]="{standalone: true}" 
+                      [binary]="true" [disabled]="!isEdit"></p-checkbox>
                   </span>
                   <span *ngSwitchCase="'actions'">
                     <button *ngIf="isEdit" class="ui-button-danger" pButton icon="pi pi-trash"

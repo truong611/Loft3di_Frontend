@@ -161,7 +161,6 @@ export class PhanBoImportDetailComponent implements OnInit {
         this.getDataFromAssetImportComponent();
         this.checkStatus(true);
 
-        console.log(this.listAssetImport)
       }
     });
   }

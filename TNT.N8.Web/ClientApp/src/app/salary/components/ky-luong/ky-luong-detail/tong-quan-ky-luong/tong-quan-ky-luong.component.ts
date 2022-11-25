@@ -159,6 +159,8 @@ export class TongQuanKyLuongComponent implements OnInit {
   messEmpBangLuong: string = null;
   messLoaiTroCap: string = null;
 
+  setHeight: any
+
   constructor(
     private getPermission: GetPermission,
     private router: Router,
@@ -429,6 +431,9 @@ export class TongQuanKyLuongComponent implements OnInit {
     }
 
     this.kyLuong = result.kyLuong;
+    if (this.kyLuong.trangThai == 1) {
+      this.setHeight = '50px'
+    } else this.setHeight = null
     this.kyLuongClone = result.kyLuong;
     this.listTongHopChamCong = result.listTongHopChamCong;
     this.listLuongTongHop = result.listLuongTongHop;
@@ -1202,6 +1207,35 @@ export class TongQuanKyLuongComponent implements OnInit {
   importTroCapKhac() {
     this.displayDialogImport = true;
     this.typeImport = 1;
+  }
+
+  async downloadTemplateExcel() {
+    /*
+      1: Trợ cấp khác
+      2: Bảng lương chi tiết
+    */
+    let result: any = await this.salaryService.downloadTemplateImport(this.typeImport);
+
+    if (result.statusCode !== 200) {
+      this.displayDialogImport = false;
+      let msg = { severity: 'error', summary: 'Thông báo:', detail: 'Download file thất bại' };
+      this.messageService.add(msg);
+      return;
+    }
+
+    const binaryString = window.atob(result.templateExcel);
+    const binaryLen = binaryString.length;
+    const bytes = new Uint8Array(binaryLen);
+    for (let idx = 0; idx < binaryLen; idx++) {
+      const ascii = binaryString.charCodeAt(idx);
+      bytes[idx] = ascii;
+    }
+    const blob = new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    const fileName = result.fileName + ".xlsx";
+    link.download = fileName;
+    link.click();
   }
 
   chooseFileTroCapKhac(event: any) {
@@ -3812,7 +3846,7 @@ export class TongQuanKyLuongComponent implements OnInit {
       row[1] = item.maNV;
       row[2] = item.maPhong;
       row[3] = item.name;
-      row[4] = item.typeOfContact === 'HĐĐT' ? 'HĐĐT' : 'HĐLĐ';
+      row[4] = item.typeOfContact === 'HĐTV' ? 'HĐTV' : 'HĐLĐ';
       row[5] = item.chuyenCan;
       row[6] = item.ngayNghiDotXuat;
       row[7] = item.ngayNghi;
@@ -4697,9 +4731,30 @@ export class TongQuanKyLuongComponent implements OnInit {
     worksheet.mergeCells(1, this.soLuongColDong + 64, 2, this.soLuongColDong + 64);
 
     data.forEach((el, index, array) => {
-      let row = worksheet.addRow(el);
-      //Chỉnh bordor và thuộc tính của từng cột của dònG
+      //parse data to float
+      if (index > 0 && index < data.length - 1) {
+        if (el[9]) el[9] = ParseStringToFloat(el[9])
+        for (let i = 20; i <= 28; i++) {
+          if (el[i].length == 0) el[i] = 0
+          el[i] = ParseStringToFloat(el[i])
+        }
 
+        if (el[30]) el[30] = ParseStringToFloat(el[30])
+        for (let i = 32; i <= 38 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 63; i++) {
+          if (el[i].length == 0) el[i] = 0
+          el[i] = ParseStringToFloat(el[i])
+        }
+      } else {
+        for (let i = 30; i <= 38 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 28; i++) {
+          if (el[i] && el[i] != "VND" && el[i] != null) {
+            el[i] = ParseStringToFloat(el[i])
+          }
+        }
+      }
+
+      let row = worksheet.addRow(el);
+
+      //Chỉnh bordor và thuộc tính của từng cột của dònG
       dataHeaderRow1.forEach((col, colIndex) => {
         row.font = { name: 'Times New Roman', size: 11 };
         row.getCell(colIndex + 1).border = { left: { style: "thin" }, top: { style: "thin" }, bottom: { style: "thin" }, right: { style: "thin" } };
@@ -4749,6 +4804,7 @@ export class TongQuanKyLuongComponent implements OnInit {
         row.getCell(this.soLuongColDong + 24 + 37 + 2).numFmt = '_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)';
         row.getCell(this.soLuongColDong + 24 + 37 + 3).numFmt = '_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)';
 
+
         //them cong thuc
         let excelColumn1 = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
         let excelColumn2 = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
@@ -4762,388 +4818,440 @@ export class TongQuanKyLuongComponent implements OnInit {
           }
         })
 
-        // công thức cho cột tĩnh
-        row.getCell(11).value = { formula: `AG${row.number}*J${row.number}/12`, date1904: false };
-        row.getCell(16).value = { formula: `=DATEDIF(L${row.number},$P$3,"y")&" year "&DATEDIF(L${row.number},$P$3,"ym")&" month "&DATEDIF(L${row.number},$P$3,"md")&" days"`, date1904: false };
-        row.getCell(30).value = { formula: `=U${row.number}+W${row.number}+X${row.number}+Y${row.number}-AB${row.number}`, date1904: false };
-        row.getCell(31).value = { formula: `=+AG${row.number}*85%`, date1904: false };
-        row.getCell(32).value = { formula: `=(AG${row.number}-AE${row.number})/AE${row.number}`, date1904: false };
-        row.getCell(34).value = { formula: `=AG${row.number}-AE${row.number}`, date1904: false };
-        row.getCell(36).value = { formula: `=IF(V${row.number}=0,AG${row.number}/$AD$3*AD${row.number},AE${row.number}/$AD$3*V${row.number}+AG${row.number}/$AD$3*(AD${row.number}-V${row.number}))`, date1904: false };
-        row.getCell(39).value = { formula: `=SUM(AK${row.number}+AL${row.number})`, date1904: false };
+        //thêm công thức cho dữ liệu nhân viên
+        if (index > 0 && index < data.length - 1) {
+          // công thức cho cột tĩnh
+          row.getCell(11).value = { formula: `AG${row.number}*J${row.number}/12`, date1904: false };
+          // row.getCell(16).value = { formula: `=DATEDIF(L${row.number},$P$3,"y")&" year "&DATEDIF(L${row.number},$P$3,"ym")&" month "&DATEDIF(L${row.number},$P$3,"md")&" days"`, date1904: false };
+          row.getCell(30).value = { formula: `=U${row.number}+W${row.number}+X${row.number}+Y${row.number}-AB${row.number}`, date1904: false };
+          row.getCell(31).value = { formula: `=+AG${row.number}*85%`, date1904: false };
+          row.getCell(32).value = { formula: `=(AG${row.number}-AE${row.number})/AE${row.number}`, date1904: false };
+          row.getCell(34).value = { formula: `=AG${row.number}-AE${row.number}`, date1904: false };
+          row.getCell(36).value = { formula: `=IF(V${row.number}=0,AG${row.number}/$AD$3*AD${row.number},AE${row.number}/$AD$3*V${row.number}+AG${row.number}/$AD$3*(AD${row.number}-V${row.number}))`, date1904: false };
+          row.getCell(39).value = { formula: `=SUM(AK${row.number}+AL${row.number})`, date1904: false };
 
-        //công thức cho cột động
-        let bienTam = ''
+          //công thức cho cột động
+          let bienTam = ''
 
-        //==========================================OTHER ALLOWANCE================================================
-        if (this.countOTHERALLOWANCE > 1) {
-          // row.getCell(39 + this.countOTHERALLOWANCE).value = {
-          //   formula: `=SUM(${excelColumn[39]}${row.number}:${excelColumn[39 + this.countOTHERALLOWANCE - 2]}${row.number})`, date1904: false
-          // };
-          if (this.countOTHERALLOWANCE == 2) {
-            row.getCell(39 + this.countOTHERALLOWANCE).value = {
-              formula: `${excelColumn[39]}${row.number}`, date1904: false
-            };
-          } else if (this.countOTHERALLOWANCE == 3) {
-            row.getCell(39 + this.countOTHERALLOWANCE).value = {
-              formula: `${excelColumn[39]}${row.number}+${excelColumn[39 + this.countOTHERALLOWANCE - 2]}${row.number}`, date1904: false
-            };
-          } else if (this.countOTHERALLOWANCE == 4) {
-            row.getCell(39 + this.countOTHERALLOWANCE).value = {
-              formula: `${excelColumn[39]}${row.number}+${excelColumn[40]}${row.number}+${excelColumn[41]}${row.number}`, date1904: false
-            };
-          } else if (this.countOTHERALLOWANCE == 5) {
-            row.getCell(39 + this.countOTHERALLOWANCE).value = {
-              formula: `${excelColumn[39]}${row.number}+${excelColumn[40]}${row.number}+${excelColumn[41]}${row.number}+${excelColumn[42]}${row.number}`, date1904: false
-            };
-          } else if (this.countOTHERALLOWANCE == 6) {
-            row.getCell(39 + this.countOTHERALLOWANCE).value = {
-              formula: `${excelColumn[39]}${row.number}+${excelColumn[40]}${row.number}+${excelColumn[41]}${row.number}+${excelColumn[42]}${row.number}+${excelColumn[43]}${row.number}`, date1904: false
-            };
+          //==========================================OTHER ALLOWANCE================================================
+          if (this.countOTHERALLOWANCE > 1) {
+            // row.getCell(39 + this.countOTHERALLOWANCE).value = {
+            //   formula: `=SUM(${excelColumn[39]}${row.number}:${excelColumn[39 + this.countOTHERALLOWANCE - 2]}${row.number})`, date1904: false
+            // };
+            if (this.countOTHERALLOWANCE == 2) {
+              row.getCell(39 + this.countOTHERALLOWANCE).value = {
+                formula: `${excelColumn[39]}${row.number}`, date1904: false
+              };
+            } else if (this.countOTHERALLOWANCE == 3) {
+              row.getCell(39 + this.countOTHERALLOWANCE).value = {
+                formula: `${excelColumn[39]}${row.number}+${excelColumn[39 + this.countOTHERALLOWANCE - 2]}${row.number}`, date1904: false
+              };
+            } else if (this.countOTHERALLOWANCE == 4) {
+              row.getCell(39 + this.countOTHERALLOWANCE).value = {
+                formula: `${excelColumn[39]}${row.number}+${excelColumn[40]}${row.number}+${excelColumn[41]}${row.number}`, date1904: false
+              };
+            } else if (this.countOTHERALLOWANCE == 5) {
+              row.getCell(39 + this.countOTHERALLOWANCE).value = {
+                formula: `${excelColumn[39]}${row.number}+${excelColumn[40]}${row.number}+${excelColumn[41]}${row.number}+${excelColumn[42]}${row.number}`, date1904: false
+              };
+            } else if (this.countOTHERALLOWANCE == 6) {
+              row.getCell(39 + this.countOTHERALLOWANCE).value = {
+                formula: `${excelColumn[39]}${row.number}+${excelColumn[40]}${row.number}+${excelColumn[41]}${row.number}+${excelColumn[42]}${row.number}+${excelColumn[43]}${row.number}`, date1904: false
+              };
+            }
+          } else {
+            row.getCell(39 + this.countOTHERALLOWANCE).value = 0
           }
-        } else {
-          row.getCell(39 + this.countOTHERALLOWANCE).value = 0
-        }
-        //==========================================OTHER BONUS================================================
-        if (this.countOTHERBONUS > 1) {
-          // row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS).value = {
-          //   formula: `=SUM(${excelColumn[39 + this.countOTHERALLOWANCE]}${row.number}:${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS - 2]}${row.number})`, date1904: false
+          //==========================================OTHER BONUS================================================
+          if (this.countOTHERBONUS > 1) {
+            // row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS).value = {
+            //   formula: `=SUM(${excelColumn[39 + this.countOTHERALLOWANCE]}${row.number}:${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS - 2]}${row.number})`, date1904: false
+            // };
+
+            if (this.countOTHERBONUS == 2) {
+              row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS).value = {
+                formula: `${excelColumn[39]}${row.number}`, date1904: false
+              };
+            } else if (this.countOTHERBONUS == 3) {
+              row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS).value = {
+                formula: `${excelColumn[39]}${row.number}+${excelColumn[39 + this.countOTHERALLOWANCE - 2]}${row.number}`, date1904: false
+              };
+            } else if (this.countOTHERBONUS == 4) {
+              row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS).value = {
+                formula: `${excelColumn[39]}${row.number}+${excelColumn[40]}${row.number}+${excelColumn[41]}${row.number}`, date1904: false
+              };
+            } else if (this.countOTHERBONUS == 5) {
+              row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS).value = {
+                formula: `${excelColumn[39]}${row.number}+${excelColumn[40]}${row.number}+${excelColumn[41]}${row.number}+${excelColumn[42]}${row.number}`, date1904: false
+              };
+            } else if (this.countOTHERBONUS == 6) {
+              row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS).value = {
+                formula: `${excelColumn[39]}${row.number}+${excelColumn[40]}${row.number}+${excelColumn[41]}${row.number}+${excelColumn[42]}${row.number}+${excelColumn[43]}${row.number}`, date1904: false
+              };
+            }
+          } else {
+            row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS).value = 0
+          }
+
+          // Cột 51
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 1).value = {
+            formula: `=${excelColumn[39 + this.countOTHERALLOWANCE - 2 + 1]}${row.number}+AM${row.number}+${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS - 1]}${row.number}`, date1904: false
+          };
+          //Cột 54
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 4).value = {
+            formula: `=${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 1 - 1]}${row.number}+AJ${row.number}+AI${row.number}+${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 1 - 1 + 1]}${row.number}-${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 1 - 1 + 2]}${row.number}`, date1904: false
+          };
+          //Cột 55
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 5).value = {
+            formula: `=IF(${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 4 - 1]}${row.number}-AL${row.number}-${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 1 - 1 + 1]}${row.number}>0,${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 4 - 1]}${row.number}-AL${row.number}-${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 1 - 1 + 1]}${row.number},0)`, date1904: false
+          };
+
+          //OTHER DEDUCTION BEFORE TAX (TAX EXAMPTION)
+          // row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 6).value = {
+          //   formula: `=+SUMIFS(GTGC!$E:$E,GTGC!$B:$B,B${row.number})`, date1904: false
+          // };
+          //Cột 57
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 7).value = {
+            formula: `=IF(${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 6 - 1]}${row.number}>=1,1,0)`, date1904: false
+          };
+          //Cột 58
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 8).value = {
+            formula: `=IF(${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 6 - 1]}${row.number}>=1,12-${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 7 - 1]}${row.number}+1,0)`, date1904: false
+          };
+          //Cột 59
+          let cot55 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 5 - 1]}${row.number}`;
+          let cot56 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 6 - 1]}${row.number}`;
+
+          let cot59Code = excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 9 - 1];
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 9).value = {
+            formula: `=IF(${cot55}>0,${cot56}*$${cot59Code}$3,0)`, date1904: false
+          };
+          //Cột 60
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 10).value = {
+            formula: `=IF(S${row.number}="HĐLĐ",$BI$3,0)`, date1904: false
+          };
+          //Cột 61
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 11).value = {
+            formula: `=${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 9 - 1]}${row.number}+${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 10 - 1]}${row.number}`, date1904: false
+          };
+          //Cột 62 chưa có công thức
+
+          // cột 68
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 18).value = {
+            formula: `=IF(${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 5 - 1]}${row.number}-${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 11 - 1]}${row.number}-${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 12 - 1]}${row.number}-${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 13 - 1]}${row.number}+${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 14 - 1]}${row.number}+${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 17 - 1]}${row.number}+${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 15 - 1]}${row.number}>0,${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 5 - 1]}${row.number}-${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 11 - 1]}${row.number}-${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 12 - 1]}${row.number}-${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 13 - 1]}${row.number}+${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 14 - 1]}${row.number}+${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 17 - 1]}${row.number}+${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 15 - 1]}${row.number},0)`, date1904: false
+          };
+
+          // cột 69
+          let cot69 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 19 - 1]}${row.number}`;
+          bienTam = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 18 - 1]}${row.number}`
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 19).value = {
+            formula: `=IF(${bienTam}>0,IF(${bienTam}<=0,0,IF(AND(${bienTam}>0,${bienTam}<=5000000),${bienTam}*0.05,IF(AND(${bienTam}>5000000,${bienTam}<=10000000),${bienTam}*0.1-250000,IF(AND(${bienTam}>10000000,${bienTam}<=18000000),${bienTam}*0.15-750000,IF(AND(${bienTam}>18000000,${bienTam}<=32000000),${bienTam}*0.2-1650000,IF(AND(${bienTam}>32000000,${bienTam}<=52000000),${bienTam}*0.25-3250000,IF(AND(${bienTam}>52000000,${bienTam}<=80000000),${bienTam}*0.3-5850000,${bienTam}*0.35-9850000))))))),IF(${bienTam}>2000000,${bienTam}*10%,0))`, date1904: false
+          };
+
+          // cột 70
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 20).value = {
+            formula: `=${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 18 - 1]}${row.number}-${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 16]}${row.number}`, date1904: false
+          };
+
+          // cột 71
+          bienTam = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 20 - 1]}${row.number}`
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 21).value = {
+            formula: `=IF(${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 10 - 1]}${row.number}>0,IF(${bienTam}<=0,0,IF(AND(${bienTam}>0,${bienTam}<=5000000),${bienTam}*0.05,IF(AND(${bienTam}>5000000,${bienTam}<=10000000),${bienTam}*0.1-250000,IF(AND(${bienTam}>10000000,${bienTam}<=18000000),${bienTam}*0.15-750000,IF(AND(${bienTam}>18000000,${bienTam}<=32000000),${bienTam}*0.2-1650000,IF(AND(${bienTam}>32000000,${bienTam}<=52000000),${bienTam}*0.25-3250000,IF(AND(${bienTam}>52000000,${bienTam}<=80000000),${bienTam}*0.3-5850000,${bienTam}*0.35-9850000))))))),IF(${bienTam}>2000000,${bienTam}*10%,0))`, date1904: false
+          };
+
+          // cột 72
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 22).value = {
+            formula: `=${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 19 - 1]}${row.number}-${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 21 - 1]}${row.number}`, date1904: false
+          };
+
+          // cột 75
+          let cot75 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 25 - 1]}${row.number}`;
+
+          //cột 76
+          let cot76 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 26 - 1]}${row.number}`;
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 26).value = {
+            formula: `=${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 21 - 1]}${row.number}-${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 23 - 1]}${row.number}- ${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 25 - 1]}${row.number}-${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 24 - 1]}${row.number}`, date1904: false
+          };
+
+          // cột 77: =IF(S9="HĐLĐ",IF((+Z9+AA9+AB9)<=14,IF(AG9>$BZ$7*20,$BZ$7*20,AG9),0),0)
+          var luongCoBan = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 27 - 1]}`;
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 27).value = {
+            formula: `=IF(S${row.number}="HDLD",IF((+Z${row.number}+AA${row.number}+AB${row.number})<=14,IF(AG${row.number}>$${luongCoBan}$3*20,$${luongCoBan}$3*20,AG${row.number}),0),0)`, date1904: false
+          };
+
+          // cột 78: ==IF(S8="HĐLĐ",IF((Z8+AA8+AB8)<=14,IF(AG8>$CA$7*20,$CA$7*20,AG8)),0)
+          let cot78 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 28 - 1]}${row.number}`;
+          var luongCoBanDongBH = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 28 - 1]}`;
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 28).value = {
+            formula: `=IF(S${row.number}="HDLD",IF((+Z${row.number}+AA${row.number}+AB${row.number})<=14,IF(AG${row.number}>$${luongCoBanDongBH}$3*20,$${luongCoBanDongBH}$${row.number - 1}*20,AG${row.number}),0),0)`, date1904: false
+          };
+
+          //========================================Bảo hiểm thất nghiệp========================================
+          // cột 80: = CA8*$CC$7
+          let cot80 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 30 - 1]}${row.number}`;
+          let bhtnEmpCol = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 30 - 1]}`;
+          // bảo hiểm thất nghiệp nhân viên
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 30).value = {
+            formula: `=${cot78}*$${bhtnEmpCol}$3`, date1904: false
+          };
+
+          // cột 81:
+          let cot79 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 29 - 1]}${row.number}`;
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 31).value = {
+            formula: `=${cot80}+${cot79}`, date1904: false
+          };
+
+          //========================================Bảo hiểm xã hội========================================
+          //cột 82
+          let cot82 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 32 - 1]}${row.number}`;
+          let bhxhCompanyCol = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 32 - 1]}`;
+          // bảo hiểm nhân viên
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 32).value = {
+            formula: `=${cot78}*$${bhxhCompanyCol}$3`, date1904: false
+          };
+
+          //Cột 83:
+          let cot83 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 33 - 1]}${row.number}`;
+          let bhxhEmpCol = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 33 - 1]}`;
+          // bảo hiểm  nhân viên
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 33).value = {
+            formula: `=${cot78}*$${bhxhEmpCol}$3`, date1904: false
+          };
+
+          // cột 84:
+          let cot84 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 34 - 1]}${row.number}`;
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 34).value = {
+            formula: `=${cot82}+${cot83}`, date1904: false
+          };
+
+          //========================================Bảo hiểm tai nạn nghề nghiệp========================================
+          //cột 85
+          let cot85 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 35 - 1]}${row.number}`;
+          let bhtnnnCompanyCol = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 35 - 1]}`;
+          // bảo hiểm nhân viên
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 35).value = {
+            formula: `=${cot78}*$${bhtnnnCompanyCol}$3`, date1904: false
+          };
+
+          //Cột 86:
+          let cot86 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 36 - 1]}${row.number}`;
+          let bhtnnnEmpCol = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 36 - 1]}`;
+          // bảo hiểm  nhân viên
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 36).value = {
+            formula: `=${cot78}*$${bhtnnnEmpCol}$3`, date1904: false
+          };
+
+          // cột 87:
+          let cot87 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 37 - 1]}${row.number}`;
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 37).value = {
+            formula: `=${cot85}+${cot86}`, date1904: false
+          };
+
+          //cột 88
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 38).value = {
+            formula: `=${cot84}+${cot87}`, date1904: false
+          };
+
+          //========================================Bảo hiểm y tế========================================
+          //cột 89
+          let cot89 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 39 - 1]}${row.number}`;
+          let bhytCompanyCol = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 39 - 1]}`;
+          // bảo hiểm nhân viên
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 39).value = {
+            formula: `=${cot78}*$${bhytCompanyCol}$3`, date1904: false
+          };
+
+          //Cột 90
+          let cot90 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 40 - 1]}${row.number}`;
+          let bhytEmpCol = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 40 - 1]}`;
+          // bảo hiểm  nhân viên
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 40).value = {
+            formula: `=${cot78}*$${bhytEmpCol}$3`, date1904: false
+          };
+
+          // cột 91
+          let cot91 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 41 - 1]}${row.number}`;
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 41).value = {
+            formula: `=${cot89}+${cot90}`, date1904: false
+          };
+
+          //======================================== Các khoản vể BH bắt buộc bù trừ tháng trước phải trả vào tháng này nếu có ========================================
+
+          // cột 92
+          let cot92 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 42 - 1]}${row.number}`;
+          // row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 42).value = {
+          //   formula: `=${cot79}+${cot82}+${cot85}+${cot89}`, date1904: false
           // };
 
-          if (this.countOTHERBONUS == 2) {
-            row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS).value = {
-              formula: `${excelColumn[39]}${row.number}`, date1904: false
-            };
-          } else if (this.countOTHERBONUS == 3) {
-            row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS).value = {
-              formula: `${excelColumn[39]}${row.number}+${excelColumn[39 + this.countOTHERALLOWANCE - 2]}${row.number}`, date1904: false
-            };
-          } else if (this.countOTHERBONUS == 4) {
-            row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS).value = {
-              formula: `${excelColumn[39]}${row.number}+${excelColumn[40]}${row.number}+${excelColumn[41]}${row.number}`, date1904: false
-            };
-          } else if (this.countOTHERBONUS == 5) {
-            row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS).value = {
-              formula: `${excelColumn[39]}${row.number}+${excelColumn[40]}${row.number}+${excelColumn[41]}${row.number}+${excelColumn[42]}${row.number}`, date1904: false
-            };
-          } else if (this.countOTHERBONUS == 6) {
-            row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS).value = {
-              formula: `${excelColumn[39]}${row.number}+${excelColumn[40]}${row.number}+${excelColumn[41]}${row.number}+${excelColumn[42]}${row.number}+${excelColumn[43]}${row.number}`, date1904: false
-            };
-          }
-        } else {
-          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS).value = 0
+          // cột 93
+          let cot93 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 43 - 1]}${row.number}`;
+          // row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 43).value = {
+          //   formula: `=${cot80}+${cot83}+${cot86}+${cot90}`, date1904: false
+          // };
+
+          // cột 94
+          let cot94 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 44 - 1]}${row.number}`;
+          // row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 44).value = {
+          //   formula: `=${cot92}+${cot93}`, date1904: false
+          // };
+
+          //======================================== Tổng tiền BH bắt buộc phải trả của cty và NLĐ ========================================
+
+          // cột 95 =SUMIF($CB$6:$CQ$218,$CR$6,CB8:CQ8)
+          let cot95 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 45 - 1]}`;
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 45).value = {
+            formula: `=SUMIF($${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 29 - 1]}$2:$${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 44 - 1]}$${data.length + 1},$${cot95}$2,${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 29 - 1]}${row.number}:${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 44 - 1]}${row.number})`, date1904: false
+          };
+
+          // cột 96 =SUMIF($CB$6:$CQ$218,$CS$6,CB9:CQ9)
+          let cot96 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 46 - 1]}`;
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 46).value = {
+            formula: `=SUMIF($${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 29 - 1]}$2:$${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 44 - 1]}$${data.length + 1},$${cot96}$2,${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 29 - 1]}${row.number}:${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 44 - 1]}${row.number})`, date1904: false
+          };
+
+          // cột 97
+          let cot97 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 47 - 1]}${row.number}`;
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 47).value = {
+            formula: `=${cot95}${row.number}+${cot96}${row.number}`, date1904: false
+          };
+
+          //======================================== Thu nhập thực nhận trước khi bù trừ thuế nếu có ========================================
+          // cột 98
+          let cot98 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 48 - 1]}${row.number}`;
+          let cot44 = `${excelColumn[39 + this.countOTHERALLOWANCE - 1]}${row.number}`;
+          let cot50 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS - 1]}${row.number}`;
+          let cot52 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 2 - 1]}${row.number}`;
+          let cot53 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 3 - 1]}${row.number}`;
+
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 48).value = {
+            formula: `=ROUND(AJ${row.number}+AM${row.number}+${cot44}+${cot50}+${cot52}-${cot53}-${cot76}-${cot96}${row.number}+AI${row.number},0)`, date1904: false
+          };
+
+          //Cột 99
+          let cot99 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 49 - 1]}${row.number}`;
+          let CV_data = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 49 - 1]}`;
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 49).value = {
+            formula: `=${cot78}*$${CV_data}$3`, date1904: false
+          };
+
+          //Cột 100
+          let cot100 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 50 - 1]}${row.number}`;
+
+          //Cột 101
+          let cot101 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 51 - 1]}${row.number}`;
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 51).value = {
+            formula: `=${cot99}+${cot100}`, date1904: false
+          };
+
+          //Cột 102
+          let cot102 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 52 - 1]}${row.number}`;
+
+          //Cột 103
+          let cot103 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 53 - 1]}${row.number}`;
+
+          //Cột 104
+          let cot104 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 54 - 1]}${row.number}`;
+
+          //Cột 105
+          let cot105 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 55 - 1]}${row.number}`;
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 55).value = {
+            formula: `=${cot102}+${cot103}+${cot104}`, date1904: false
+          };
+
+          //Cột 106
+          let cot106 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 56 - 1]}${row.number}`;
+
+          //Cột 107
+          let cot107 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 57 - 1]}${row.number}`;
+
+          //Cột 108
+          let cot108 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 58 - 1]}${row.number}`;
+
+          //Cột 109
+          let cot109 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 59 - 1]}${row.number}`;
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 59).value = {
+            formula: `=${cot106}+${cot107}+${cot108}`, date1904: false
+          };
+
+          //Cột 110
+          let cot110 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 60 - 1]}${row.number}`;
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 60).value = {
+            formula: `=ROUND(${cot99}-${cot106}+${cot109},0)`, date1904: false
+          };
+
+          //Cột 111
+          let cot111 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 61 - 1]}${row.number}`;
+
+          //Cột 112
+          let cot112 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 62 - 1]}${row.number}`;
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 62).value = {
+            formula: `=${cot110} - ${cot111}`, date1904: false
+          };
+
+          //Cột 113
+          let cot113 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 63 - 1]}${row.number}`;
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 63).value = {
+            formula: `=ROUND(${cot69}+${cot97}+${cot101}+${cot110}-${cot109}+${cot105},0)`, date1904: false
+          };
+
+          //Cột 114
+          row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 64).value = {
+            formula: `=${cot113} - ${cot75}`, date1904: false
+          };
         }
+        //thêm công thức cho dòng tính tổng
+        else if (index == data.length - 1) {
+          row.getCell(11).value = { formula: `=SUM(K4:K${4 + data.length - 3})`, date1904: false };
+          for (let i = 19; i <= 31; i++) {
+            row.getCell(i).value = { formula: `=SUM(${excelColumn[i - 1]}4:${excelColumn[i - 1]}${4 + data.length - 3})`, date1904: false };
+          }
+          for (let i = 33; i <= 39; i++) {
+            row.getCell(i).value = { formula: `=SUM(${excelColumn[i - 1]}4:${excelColumn[i - 1]}${4 + data.length - 3})`, date1904: false };
+          }
+          for (let i = 40; i <= 40 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 63; i++) {
+            row.getCell(i).value = { formula: `=SUM(${excelColumn[i - 1]}4:${excelColumn[i - 1]}${4 + data.length - 3})`, date1904: false };
+          }
+        }
+        //thêm công thức cho dòng data mặc định
+        else {
+          // công thức cho cột tĩnh
+          row.getCell(31).value = { formula: `AH${row.number}-AG${row.number}`, date1904: false };
+          row.getCell(32).value = { formula: `=(SUM(AG${row.number + 1}:AG${row.number + data.length - 1})-SUM(AE${row.number + 1}:AE${row.number + data.length - 2}))/SUM(AE${row.number + 1}:AE${row.number + data.length - 2})`, date1904: false };
+          row.getCell(33).value = { formula: `=AH${row.number}*10%`, date1904: false };
 
-        // Cột 51
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 1).value = {
-          formula: `=${excelColumn[39 + this.countOTHERALLOWANCE - 2 + 1]}${row.number}+AM${row.number}+${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS - 1]}${row.number}`, date1904: false
-        };
-        //Cột 54
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 4).value = {
-          formula: `=${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 1 - 1]}${row.number}+AJ${row.number}+AI${row.number}+${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 1 - 1 + 1]}${row.number}-${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 1 - 1 + 2]}${row.number}`, date1904: false
-        };
-        //Cột 55
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 5).value = {
-          formula: `=IF(${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 4 - 1]}${row.number}-AL${row.number}-${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 1 - 1 + 1]}${row.number}>0,${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 4 - 1]}${row.number}-AL${row.number}-${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 1 - 1 + 1]}${row.number},0)`, date1904: false
-        };
-
-        //OTHER DEDUCTION BEFORE TAX (TAX EXAMPTION)
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 6).value = {
-          formula: `=+SUMIFS(GTGC!$E:$E,GTGC!$B:$B,B${row.number})`, date1904: false
-        };
-        //Cột 57
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 7).value = {
-          formula: `=IF(${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 6 - 1]}${row.number}>=1,1,0)`, date1904: false
-        };
-        //Cột 58
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 8).value = {
-          formula: `=IF(${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 6 - 1]}${row.number}>=1,12-${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 7 - 1]}${row.number}+1,0)`, date1904: false
-        };
-        //Cột 59
-        let cot55 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 5 - 1]}${row.number}`;
-        let cot56 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 6 - 1]}${row.number}`;
-
-        let cot59Code = excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 9 - 1];
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 9).value = {
-          formula: `=IF(${cot55}>0,${cot56}*$${cot59Code}$3,0)`, date1904: false
-        };
-        //Cột 60
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 10).value = {
-          formula: `=IF(S${row.number}="HĐLĐ",$BI$3,0)`, date1904: false
-        };
-        //Cột 61
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 11).value = {
-          formula: `=${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 9 - 1]}${row.number}+${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 10 - 1]}${row.number}`, date1904: false
-        };
-        //Cột 62 chưa có công thức
-
-        // cột 68
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 18).value = {
-          formula: `=IF(${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 5 - 1]}${row.number}-${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 11 - 1]}${row.number}-${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 12 - 1]}${row.number}-${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 13 - 1]}${row.number}+${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 14 - 1]}${row.number}+${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 17 - 1]}${row.number}+${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 15 - 1]}${row.number}>0,${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 5 - 1]}${row.number}-${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 11 - 1]}${row.number}-${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 12 - 1]}${row.number}-${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 13 - 1]}${row.number}+${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 14 - 1]}${row.number}+${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 17 - 1]}${row.number}+${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 15 - 1]}${row.number},0)`, date1904: false
-        };
-
-        // cột 69
-        let cot69 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 19 - 1]}${row.number}`;
-        bienTam = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 18 - 1]}${row.number}`
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 19).value = {
-          formula: `=IF(${bienTam}>0,IF(${bienTam}<=0,0,IF(AND(${bienTam}>0,${bienTam}<=5000000),${bienTam}*0.05,IF(AND(${bienTam}>5000000,${bienTam}<=10000000),${bienTam}*0.1-250000,IF(AND(${bienTam}>10000000,${bienTam}<=18000000),${bienTam}*0.15-750000,IF(AND(${bienTam}>18000000,${bienTam}<=32000000),${bienTam}*0.2-1650000,IF(AND(${bienTam}>32000000,${bienTam}<=52000000),${bienTam}*0.25-3250000,IF(AND(${bienTam}>52000000,${bienTam}<=80000000),${bienTam}*0.3-5850000,${bienTam}*0.35-9850000))))))),IF(${bienTam}>2000000,${bienTam}*10%,0))`, date1904: false
-        };
-
-        // cột 70
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 20).value = {
-          formula: `=${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 18 - 1]}${row.number}-${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 16]}${row.number}`, date1904: false
-        };
-
-        // cột 71
-        bienTam = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 20 - 1]}${row.number}`
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 21).value = {
-          formula: `=IF(${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 10 - 1]}${row.number}>0,IF(${bienTam}<=0,0,IF(AND(${bienTam}>0,${bienTam}<=5000000),${bienTam}*0.05,IF(AND(${bienTam}>5000000,${bienTam}<=10000000),${bienTam}*0.1-250000,IF(AND(${bienTam}>10000000,${bienTam}<=18000000),${bienTam}*0.15-750000,IF(AND(${bienTam}>18000000,${bienTam}<=32000000),${bienTam}*0.2-1650000,IF(AND(${bienTam}>32000000,${bienTam}<=52000000),${bienTam}*0.25-3250000,IF(AND(${bienTam}>52000000,${bienTam}<=80000000),${bienTam}*0.3-5850000,${bienTam}*0.35-9850000))))))),IF(${bienTam}>2000000,${bienTam}*10%,0))`, date1904: false
-        };
-
-        // cột 72
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 22).value = {
-          formula: `=${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 19 - 1]}${row.number}-${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 21 - 1]}${row.number}`, date1904: false
-        };
-
-        // cột 75
-        let cot75 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 25 - 1]}${row.number}`;
-
-        //cột 76
-        let cot76 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 26 - 1]}${row.number}`;
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 26).value = {
-          formula: `=${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 21 - 1]}${row.number}-${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 23 - 1]}${row.number}- ${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 25 - 1]}${row.number}-${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 24 - 1]}${row.number}`, date1904: false
-        };
-
-        // cột 77: =IF(S9="HĐLĐ",IF((+Z9+AA9+AB9)<=14,IF(AG9>$BZ$7*20,$BZ$7*20,AG9),0),0)
-        var luongCoBan = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 27 - 1]}`;
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 27).value = {
-          formula: `=IF(S${row.number}="HDLD",IF((+Z${row.number}+AA${row.number}+AB${row.number})<=14,IF(AG${row.number}>$${luongCoBan}$3*20,$${luongCoBan}$3*20,AG${row.number}),0),0)`, date1904: false
-        };
-
-        // cột 78: ==IF(S8="HĐLĐ",IF((Z8+AA8+AB8)<=14,IF(AG8>$CA$7*20,$CA$7*20,AG8)),0)
-        let cot78 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 28 - 1]}${row.number}`;
-        var luongCoBanDongBH = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 28 - 1]}`;
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 28).value = {
-          formula: `=IF(S${row.number}="HDLD",IF((+Z${row.number}+AA${row.number}+AB${row.number})<=14,IF(AG${row.number}>$${luongCoBanDongBH}$3*20,$${luongCoBanDongBH}$${row.number - 1}*20,AG${row.number}),0),0)`, date1904: false
-        };
-
-        //========================================Bảo hiểm thất nghiệp========================================
-        // cột 80: = CA8*$CC$7
-        let cot80 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 30 - 1]}${row.number}`;
-        let bhtnEmpCol = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 30 - 1]}`;
-        // bảo hiểm thất nghiệp nhân viên
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 30).value = {
-          formula: `=${cot78}*$${bhtnEmpCol}$3`, date1904: false
-        };
-
-        // cột 81:
-        let cot79 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 29 - 1]}${row.number}`;
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 31).value = {
-          formula: `=${cot80}+${cot79}`, date1904: false
-        };
-
-        //========================================Bảo hiểm xã hội========================================
-        //cột 82
-        let cot82 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 32 - 1]}${row.number}`;
-        let bhxhCompanyCol = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 32 - 1]}`;
-        // bảo hiểm nhân viên
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 32).value = {
-          formula: `=${cot78}*$${bhxhCompanyCol}$3`, date1904: false
-        };
-
-        //Cột 83:
-        let cot83 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 33 - 1]}${row.number}`;
-        let bhxhEmpCol = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 33 - 1]}`;
-        // bảo hiểm  nhân viên
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 33).value = {
-          formula: `=${cot78}*$${bhxhEmpCol}$3`, date1904: false
-        };
-
-        // cột 84:
-        let cot84 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 34 - 1]}${row.number}`;
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 34).value = {
-          formula: `=${cot82}+${cot83}`, date1904: false
-        };
-
-        //========================================Bảo hiểm tai nạn nghề nghiệp========================================
-        //cột 85
-        let cot85 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 35 - 1]}${row.number}`;
-        let bhtnnnCompanyCol = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 35 - 1]}`;
-        // bảo hiểm nhân viên
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 35).value = {
-          formula: `=${cot78}*$${bhtnnnCompanyCol}$3`, date1904: false
-        };
-
-        //Cột 86:
-        let cot86 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 36 - 1]}${row.number}`;
-        let bhtnnnEmpCol = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 36 - 1]}`;
-        // bảo hiểm  nhân viên
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 36).value = {
-          formula: `=${cot78}*$${bhtnnnEmpCol}$3`, date1904: false
-        };
-
-        // cột 87:
-        let cot87 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 37 - 1]}${row.number}`;
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 37).value = {
-          formula: `=${cot85}+${cot86}`, date1904: false
-        };
-
-        //cột 88
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 38).value = {
-          formula: `=${cot84}+${cot87}`, date1904: false
-        };
-
-        //========================================Bảo hiểm y tế========================================
-        //cột 89
-        let cot89 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 39 - 1]}${row.number}`;
-        let bhytCompanyCol = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 39 - 1]}`;
-        // bảo hiểm nhân viên
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 39).value = {
-          formula: `=${cot78}*$${bhytCompanyCol}$3`, date1904: false
-        };
-
-        //Cột 90
-        let cot90 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 40 - 1]}${row.number}`;
-        let bhytEmpCol = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 40 - 1]}`;
-        // bảo hiểm  nhân viên
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 40).value = {
-          formula: `=${cot78}*$${bhytEmpCol}$3`, date1904: false
-        };
-
-        // cột 91
-        let cot91 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 41 - 1]}${row.number}`;
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 41).value = {
-          formula: `=${cot89}+${cot90}`, date1904: false
-        };
-
-        //======================================== Các khoản vể BH bắt buộc bù trừ tháng trước phải trả vào tháng này nếu có ========================================
-
-        // cột 92
-        let cot92 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 42 - 1]}${row.number}`;
-        // row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 42).value = {
-        //   formula: `=${cot79}+${cot82}+${cot85}+${cot89}`, date1904: false
-        // };
-
-        // cột 93
-        let cot93 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 43 - 1]}${row.number}`;
-        // row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 43).value = {
-        //   formula: `=${cot80}+${cot83}+${cot86}+${cot90}`, date1904: false
-        // };
-
-        // cột 94
-        let cot94 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 44 - 1]}${row.number}`;
-        // row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 44).value = {
-        //   formula: `=${cot92}+${cot93}`, date1904: false
-        // };
-
-        //======================================== Tổng tiền BH bắt buộc phải trả của cty và NLĐ ========================================
-
-        // cột 95 =SUMIF($CB$6:$CQ$218,$CR$6,CB8:CQ8)
-        let cot95 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 45 - 1]}`;
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 45).value = {
-          formula: `=SUMIF($${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 29 - 1]}$2:$${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 44 - 1]}$${data.length + 2},$${cot95}$2,${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 29 - 1]}${row.number}:${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 44 - 1]}${row.number})`, date1904: false
-        };
-
-        // cột 96 =SUMIF($CB$6:$CQ$218,$CS$6,CB9:CQ9)
-        let cot96 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 46 - 1]}`;
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 46).value = {
-          formula: `=SUMIF($${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 29 - 1]}$2:$${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 44 - 1]}$${data.length + 2},$${cot96}$2,${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 29 - 1]}${row.number}:${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 44 - 1]}${row.number})`, date1904: false
-        };
-
-        // cột 97
-        let cot97 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 47 - 1]}${row.number}`;
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 47).value = {
-          formula: `=${cot95}${row.number}+${cot96}${row.number}`, date1904: false
-        };
-
-        //======================================== Thu nhập thực nhận trước khi bù trừ thuế nếu có ========================================
-        // cột 98
-        let cot98 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 48 - 1]}${row.number}`;
-        let cot44 = `${excelColumn[39 + this.countOTHERALLOWANCE - 1]}${row.number}`;
-        let cot50 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS - 1]}${row.number}`;
-        let cot52 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 2 - 1]}${row.number}`;
-        let cot53 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 3 - 1]}${row.number}`;
-
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 48).value = {
-          formula: `=ROUND(AJ${row.number}+AM${row.number}+${cot44}+${cot50}+${cot52}-${cot53}-${cot76}-${cot96}+AI${row.number},0)`, date1904: false
-        };
-
-        //Cột 99
-        let cot99 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 49 - 1]}${row.number}`;
-        let CV_data = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 49 - 1]}`;
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 49).value = {
-          formula: `=${cot78}*$${CV_data}$3`, date1904: false
-        };
-
-        //Cột 100
-        let cot100 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 50 - 1]}${row.number}`;
-
-        //Cột 101
-        let cot101 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 51 - 1]}${row.number}`;
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 51).value = {
-          formula: `=${cot99}+${cot100}`, date1904: false
-        };
-
-        //Cột 102
-        let cot102 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 52 - 1]}${row.number}`;
-
-        //Cột 103
-        let cot103 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 53 - 1]}${row.number}`;
-
-        //Cột 104
-        let cot104 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 54 - 1]}${row.number}`;
-
-        //Cột 105
-        let cot105 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 55 - 1]}${row.number}`;
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 55).value = {
-          formula: `=${cot102}+${cot103}+${cot104}`, date1904: false
-        };
-
-        //Cột 106
-        let cot106 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 56 - 1]}${row.number}`;
-
-        //Cột 107
-        let cot107 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 57 - 1]}${row.number}`;
-
-        //Cột 108
-        let cot108 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 58 - 1]}${row.number}`;
-
-        //Cột 109
-        let cot109 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 59 - 1]}${row.number}`;
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 59).value = {
-          formula: `=${cot106}+${cot107}+${cot108}`, date1904: false
-        };
-
-        //Cột 110
-        let cot110 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 60 - 1]}${row.number}`;
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 60).value = {
-          formula: `=ROUND(${cot99}-${cot106}+${cot110},0)`, date1904: false
-        };
-
-        //Cột 111
-        let cot111 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 61 - 1]}${row.number}`;
-
-        //Cột 112
-        let cot112 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 62 - 1]}${row.number}`;
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 62).value = {
-          formula: `=${cot110} - ${cot111}`, date1904: false
-        };
-
-        //Cột 113
-        let cot113 = `${excelColumn[39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 63 - 1]}${row.number}`;
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 63).value = {
-          formula: `=ROUND(${cot69}+${cot97}+${cot101}+${cot110}-${cot109}+${cot105},0)`, date1904: false
-        };
-
-        //Cột 114
-        row.getCell(39 + this.countOTHERALLOWANCE + this.countOTHERBONUS + 64).value = {
-          formula: `=${cot113} - ${cot75}`, date1904: false
-        };
-
+          if (this.countOTHERALLOWANCE > 1) {
+            if (this.countOTHERALLOWANCE == 2) {
+              row.getCell(39 + this.countOTHERALLOWANCE).value = {
+                formula: `${excelColumn[39]}${row.number}`, date1904: false
+              };
+            } else if (this.countOTHERALLOWANCE == 3) {
+              row.getCell(39 + this.countOTHERALLOWANCE).value = {
+                formula: `${excelColumn[39]}${row.number}+${excelColumn[39 + this.countOTHERALLOWANCE - 2]}${row.number}`, date1904: false
+              };
+            } else if (this.countOTHERALLOWANCE == 4) {
+              row.getCell(39 + this.countOTHERALLOWANCE).value = {
+                formula: `${excelColumn[39]}${row.number}+${excelColumn[40]}${row.number}+${excelColumn[41]}${row.number}`, date1904: false
+              };
+            } else if (this.countOTHERALLOWANCE == 5) {
+              row.getCell(39 + this.countOTHERALLOWANCE).value = {
+                formula: `${excelColumn[39]}${row.number}+${excelColumn[40]}${row.number}+${excelColumn[41]}${row.number}+${excelColumn[42]}${row.number}`, date1904: false
+              };
+            } else if (this.countOTHERALLOWANCE == 6) {
+              row.getCell(39 + this.countOTHERALLOWANCE).value = {
+                formula: `${excelColumn[39]}${row.number}+${excelColumn[40]}${row.number}+${excelColumn[41]}${row.number}+${excelColumn[42]}${row.number}+${excelColumn[43]}${row.number}`, date1904: false
+              };
+            }
+          } else {
+            row.getCell(39 + this.countOTHERALLOWANCE).value = 0
+          }
+        }
       })
     });
-
   }
+}
 
+function ParseStringToFloat(str: string) {
+  if (str === "" || str == null) return 0;
+  str = str.toString().replace(/,/g, '');
+  return parseFloat(str);
 }

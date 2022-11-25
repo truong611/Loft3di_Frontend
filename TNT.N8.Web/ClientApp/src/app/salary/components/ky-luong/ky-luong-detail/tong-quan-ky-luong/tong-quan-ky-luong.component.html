@@ -650,7 +650,7 @@
                         <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
                           <tr>
                             <td *ngFor="let col of columns" [ngSwitch]="col.field"
-                              [ngStyle]="{'text-align': col.textAlign, 'width': col.width}">
+                              [ngStyle]="{'text-align': col.textAlign, 'width': col.width, 'height': setHeight}">
                               <span *ngSwitchCase="'stt'">
                                 {{rowIndex + 1}}
                               </span>
@@ -737,7 +737,7 @@
                         <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
                           <tr>
                             <td *ngFor="let col of columns" [ngSwitch]="col.field"
-                              [ngStyle]="{'text-align': col.textAlign, 'width': col.width}">
+                              [ngStyle]="{'text-align': col.textAlign, 'width': col.width, 'height': setHeight}">
                               <span *ngSwitchCase="'stt'">
                                 {{rowIndex + 1}}
                               </span>
@@ -837,7 +837,7 @@
                         <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
                           <tr>
                             <td *ngFor="let col of columns" [ngSwitch]="col.field"
-                              [ngStyle]="{'text-align': col.textAlign, 'width': col.width}">
+                              [ngStyle]="{'text-align': col.textAlign, 'width': col.width, 'height': setHeight}">
                               <span *ngSwitchCase="'stt'">
                                 {{rowIndex + 1}}
                               </span>
@@ -916,7 +916,7 @@
                         <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
                           <tr>
                             <td *ngFor="let col of columns" [ngSwitch]="col.field"
-                              [ngStyle]="{'text-align': col.textAlign, 'width': col.width}">
+                              [ngStyle]="{'text-align': col.textAlign, 'width': col.width, 'height': setHeight}">
                               <span *ngSwitchCase="'stt'">
                                 {{rowIndex + 1}}
                               </span>
@@ -998,7 +998,7 @@
                         <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
                           <tr>
                             <td *ngFor="let col of columns" [ngSwitch]="col.field"
-                              [ngStyle]="{'text-align': col.textAlign, 'width': col.width}">
+                              [ngStyle]="{'text-align': col.textAlign, 'width': col.width, 'height': setHeight}">
                               <span *ngSwitchCase="'stt'">
                                 {{rowIndex + 1}}
                               </span>
@@ -1076,7 +1076,7 @@
                         <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
                           <tr>
                             <td *ngFor="let col of columns" [ngSwitch]="col.field"
-                              [ngStyle]="{'text-align': col.textAlign, 'width': col.width}">
+                              [ngStyle]="{'text-align': col.textAlign, 'width': col.width, 'height': setHeight}">
                               <span *ngSwitchCase="'stt'">
                                 {{rowIndex + 1}}
                               </span>
@@ -1178,7 +1178,7 @@
                         <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
                           <tr>
                             <td *ngFor="let col of columns" [ngSwitch]="col.field"
-                              [ngStyle]="{'text-align': col.textAlign, 'width': col.width}">
+                              [ngStyle]="{'text-align': col.textAlign, 'width': col.width, 'height': setHeight}">
                               <span *ngSwitchCase="'stt'">
                                 {{rowIndex + 1}}
                               </span>
@@ -1333,7 +1333,7 @@
                         {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
                       </span>
                       <span *ngSwitchCase="'tongThuNhapChiuThueSauGiamTru'">
-                        {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
+                        {{rowData[col.field] < 0 ? 0 : (rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field]) }}
                       </span>
                       <span *ngSwitchCase="'tongThueTncnCtyVaNld'">
                         {{rowData[col.field] > 1 ? (rowData[col.field] | number: '1.0-0' ) : rowData[col.field] }}
@@ -1432,6 +1432,16 @@
 
   <p-dialog header="Nhập file excel" [(visible)]="displayDialogImport" [modal]="true" [responsive]="true"
     [style]="{width: '550px', minWidth: '200px'}" [minY]="100" (onHide)="cancelFileTroCapKhac()">
+    <div class="row no-margin">
+      <div class="col-md-3 mt-25">
+        <span>File mẫu</span>
+      </div>
+      <div class="col-md-9 mt-25" style="margin-bottom: 10px;">
+        <button type="button" class="export-exel" (click)="downloadTemplateExcel()">
+          <span class="export-exel-text">Tải file mẫu</span>
+        </button>
+      </div>
+    </div>
     <div class="row no-margin">
       <div class="col-md-3 mt-25">
         <span>Chọn file</span>

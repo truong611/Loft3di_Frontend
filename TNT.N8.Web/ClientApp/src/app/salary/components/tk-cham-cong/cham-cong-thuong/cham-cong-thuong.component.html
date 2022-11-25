@@ -143,6 +143,18 @@
 
         <div class="row no-margin">
           <div class="col-md-12 mt-10">
+            <span>Chấm công bất thường</span>
+          </div>
+          <div class="col-md-12">
+            <p-multiSelect [options]="listOption" [(ngModel)]="listSelectedOption"
+              selectedItemsLabel="{0} được chọn" defaultLabel="Chọn điều kiện"
+              optionLabel="name" [style]="{'width': '100%'}" (keydown.enter)="$event.preventDefault()">
+            </p-multiSelect>
+          </div>
+        </div>
+
+        <div class="row no-margin">
+          <div class="col-md-12 mt-10">
             <span>Nhân viên</span>
           </div>
           <div class="col-md-12">

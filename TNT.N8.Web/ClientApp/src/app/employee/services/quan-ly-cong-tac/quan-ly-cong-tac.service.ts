@@ -188,12 +188,14 @@ export class QuanLyCongTacService {
     }
     // Tạm ứng
     else {
-      for (var chiTiet of listNoiDungTT) { 
+      for (var chiTiet of listNoiDungTT) {
         formData.append("ListNoiDungTT[" + index + "].DeNghiTamHoanUngChiTietId", chiTiet.id.toString());
         formData.append("ListNoiDungTT[" + index + "].DeNghiTamHoanUngId", '');
         formData.append("ListNoiDungTT[" + index + "].NoiDung", chiTiet.noiDung);
         formData.append("ListNoiDungTT[" + index + "].TongTienTruocVAT", chiTiet.tongTienTruocVat.toString());
         formData.append("ListNoiDungTT[" + index + "].Vat", chiTiet.vat.toString());
+        formData.append("ListNoiDungTT[" + index + "].DonGia", chiTiet.donGia.toString());
+        formData.append("ListNoiDungTT[" + index + "].SoLuong", chiTiet.soLuong.toString());
         formData.append("ListNoiDungTT[" + index + "].TienSauVat", chiTiet.tienSauVat.toString());
         formData.append("ListNoiDungTT[" + index + "].ParentId", chiTiet.parentId == null ? null : chiTiet.parentId.toString());
         formData.append("ListNoiDungTT[" + index + "].Level", chiTiet.level.toString());

@@ -19,6 +19,7 @@ export class ThemQuyTrinhPheDuyetComponent implements OnInit {
 
   formTenCauHinh: FormGroup;
   tenCauHinhControl: FormControl;
+  loaiCauHinhControl: FormControl;
 
   form: FormGroup;
 
@@ -26,9 +27,15 @@ export class ThemQuyTrinhPheDuyetComponent implements OnInit {
     return this.form.get('quyTrinh') as FormArray;
   }
 
+  listLoaiCauHinh = [
+    { name: 'Nhân viên', value: 1 },
+    { name: 'Quản lý', value: 2 },
+  ];
+
   listLoaiPheDuyet = [
     { name: 'Phê duyệt trưởng bộ phận', value: 1 },
-    { name: 'Phòng ban phê duyệt', value: 2 }
+    { name: 'Phòng ban phê duyệt', value: 2 },
+    { name: 'Phê duyệt trưởng bộ phận cấp trên', value: 3 },
   ];
 
   listOrganization: Array<any> = [];
@@ -46,9 +53,11 @@ export class ThemQuyTrinhPheDuyetComponent implements OnInit {
 
   ngOnInit(): void {
     this.tenCauHinhControl = new FormControl(null, [Validators.required]);
+    this.loaiCauHinhControl = new FormControl(this.listLoaiCauHinh[0], [Validators.required]);
 
     this.formTenCauHinh = new FormGroup({
-      tenCauHinhControl: this.tenCauHinhControl
+      tenCauHinhControl: this.tenCauHinhControl,
+      loaiCauHinhControl: this.loaiCauHinhControl
     });
 
     this.form = this.fb.group({
@@ -154,7 +163,7 @@ export class ThemQuyTrinhPheDuyetComponent implements OnInit {
     //Kiểm tra nếu Loại phê duyệt là Phòng ban phê duyệt hoặc Phòng ban xác nhận => Đã chọn phòng ban chưa?
     let error = false;
     this.quyTrinh.controls.forEach(abstractControl => {
-      if (abstractControl.get('loaiPheDuyet').value.value != 1) {
+      if (abstractControl.get('loaiPheDuyet').value.value == 2) {
         let listPhongBanId = abstractControl.get('phongBanId').value;
         if (listPhongBanId.length == 0) {
           error = true;
@@ -173,6 +182,7 @@ export class ThemQuyTrinhPheDuyetComponent implements OnInit {
 
   mapDataToModel(cauHinhQuyTrinh: CauHinhQuyTrinh) {
     cauHinhQuyTrinh.tenCauHinh = this.tenCauHinhControl.value?.trim();
+    cauHinhQuyTrinh.loaiCauHinh = this.loaiCauHinhControl.value.value;
     cauHinhQuyTrinh.listCacBuocQuyTrinh = [];
 
     let listQuyTrinh: Array<string> = [];
@@ -182,9 +192,13 @@ export class ThemQuyTrinhPheDuyetComponent implements OnInit {
         listQuyTrinh.push('Trưởng bộ phận');
       }
       //Phòng ban phê duyệt hoặc Phòng ban xác nhận
-      else {
+      else if (abstractControl.get('loaiPheDuyet').value.value == 2) {
         let listPhongBan: Array<string> = abstractControl.get('phongBan').value;
         listQuyTrinh.push(listPhongBan.join(", "));
+      }
+      //Phê duyệt trưởng bộ phận cấp trên
+      else {
+        listQuyTrinh.push('Trưởng bộ phận cấp trên');
       }
 
       let buoc = new CacBuocQuyTrinh();
@@ -209,6 +223,7 @@ export class ThemQuyTrinhPheDuyetComponent implements OnInit {
 
   mapDataToForm(cauHinhQuyTrinh: CauHinhQuyTrinh) {
     this.tenCauHinhControl.setValue(cauHinhQuyTrinh.tenCauHinh);
+    this.loaiCauHinhControl.setValue(this.listLoaiCauHinh.find(x => x.value == cauHinhQuyTrinh.loaiCauHinh) ?? this.listLoaiCauHinh[0]);
 
     //Show lại các bước
     cauHinhQuyTrinh.listCacBuocQuyTrinh.forEach(buoc => {
@@ -217,8 +232,8 @@ export class ThemQuyTrinhPheDuyetComponent implements OnInit {
       let loaiPheDuyet = this.listLoaiPheDuyet.find(x => x.value == buoc.loaiPheDuyet);
       newForm.get('loaiPheDuyet').setValue(loaiPheDuyet);
 
-      //Phòng ban phê duyệt hoặc Phòng ban xác nhận
-      if (loaiPheDuyet.value != 1) {
+      //Phòng ban phê duyệt
+      if (loaiPheDuyet.value == 2) {
         let listPhongBan: Array<string> = []; //chip
         let listPhongBanId: Array<string> = []; //Id
         buoc.listPhongBanTrongCacBuocQuyTrinh.forEach(phongBan => {

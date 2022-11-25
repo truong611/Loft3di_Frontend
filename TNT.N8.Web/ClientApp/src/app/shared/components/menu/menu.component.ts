@@ -63,7 +63,6 @@ export class MenuComponent implements OnInit {
     if (this.eventEmitterService.subsVar == undefined) {
       this.eventEmitterService.subsVar = this.eventEmitterService.
         invokeFirstComponentFunction.subscribe((name: string) => {
-          console.log('update')
           this.updateLeftMenu();
         });
     }

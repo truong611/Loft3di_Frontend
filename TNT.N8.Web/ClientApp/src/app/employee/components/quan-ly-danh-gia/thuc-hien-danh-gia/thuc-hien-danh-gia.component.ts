@@ -176,7 +176,6 @@ export class ThucHienDanhGiaComponent implements OnInit {
     this.loading = true;
     let result: any = await this.employeeService.thucHienDanhGiaDetail(this.danhGiaNhanVienId);
     this.loading = false;
-    console.log(result)
     if (result.statusCode != 200) {
       let msg = { severity: 'error', summary: 'Thông báo:', detail: result.message };
       this.showMessage(msg);
@@ -452,7 +451,6 @@ export class ThucHienDanhGiaComponent implements OnInit {
     this.loading = true;
     let result: any = await this.employeeService.luuOrHoanThanhDanhGia(danhGiaNhanVien, listCauTraLoi, isClickHoanThanh);
     this.loading = false;
-    console.log(result)
     if (result.statusCode != 200) {
       let msg = { severity: 'error', summary: 'Thông báo:', detail: result.message };
       this.showMessage(msg);

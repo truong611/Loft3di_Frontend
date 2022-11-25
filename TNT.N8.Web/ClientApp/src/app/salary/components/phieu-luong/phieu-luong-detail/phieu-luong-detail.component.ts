@@ -164,7 +164,6 @@ export class PhieuLuongDetailComponent implements OnInit {
   };
 
   exportFile() {
-    // console.log(this.data)
     let data = {
       template: 4,
       data: Object.assign({}, this.data, {

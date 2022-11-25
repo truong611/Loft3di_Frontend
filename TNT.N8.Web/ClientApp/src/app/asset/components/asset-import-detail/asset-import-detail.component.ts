@@ -141,7 +141,6 @@ export class AssetImportDetailComponent implements OnInit {
   ) {
     if (this.config.data) {
       this.listTaiSanImport = this.config.data.listTaiSanImport;
-      console.log('sangcompotnent mới', this.listTaiSanImport)
     }
   }
 
@@ -192,7 +191,6 @@ export class AssetImportDetailComponent implements OnInit {
     let result: any = await this.assetService.getMasterDataAssetForm();
     this.loading = false;
     if (result.statusCode == 200) {
-      console.log(result);
       this.listPhanLoaiTS = result.listPhanLoaiTS;
       this.listKhuVuc = result.listProvinceModel;
       this.listMaTaiSan = result.listMaTS.map(x => x.toUpperCase().trim());
@@ -419,7 +417,6 @@ export class AssetImportDetailComponent implements OnInit {
     } else {
       let mgs = { severity: 'error', summary: 'Thông báo', detail: result.message };
       this.showMessage(mgs);
-      console.log(result)
       // this.ref.close(result);
     }
   }

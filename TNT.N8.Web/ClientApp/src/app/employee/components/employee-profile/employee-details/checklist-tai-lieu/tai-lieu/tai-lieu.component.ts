@@ -8,7 +8,7 @@ import { TaiLieuNhanVienModel } from './../../../../../models/tai-lieu-nhan-vien
 
 import { EmployeeService } from './../../../../../services/employee.service';
 import { DataService } from './../../../../../../shared/services/data.service';
-
+import { FormatDateService } from './../../../../../../shared/services/formatDate.services';
 import { ThemMoiTaiLieuComponent } from '../them-moi-tai-lieu/them-moi-tai-lieu.component';
 
 @Component({
@@ -34,6 +34,9 @@ export class TaiLieuComponent implements OnInit {
   displayTuChoi: boolean = false;
   lyDoTuChoi = null;
 
+  ngayNop: Date = null;
+  ngayHenNop: Date = null;
+
   @ViewChild('myTable') myTable: Table;
   constructor(
     public dialogService: DialogService,
@@ -41,6 +44,7 @@ export class TaiLieuComponent implements OnInit {
     private employeeService: EmployeeService,
     public confirmationService: ConfirmationService,
     private dataService: DataService,
+    private formatDateService: FormatDateService,
   ) { }
 
   ngOnInit(): void {
@@ -52,9 +56,9 @@ export class TaiLieuComponent implements OnInit {
     this.cols = [
       { field: 'stt', header: '#', textAlign: 'center', colWith: '3vw' },
       { field: 'tenTaiLieu', header: 'Tài liệu', textAlign: 'left', colWith: '' },
-      { field: 'ngayNop', header: 'Ngày nộp', textAlign: 'center', colWith: '8vw' },
-      { field: 'ngayHen', header: 'Ngày hẹn nộp', textAlign: 'center', colWith: '8vw' },
-      { field: 'action', header: 'Thao tác', textAlign: 'center', colWith: '150px' }
+      // { field: 'ngayNop', header: 'Ngày nộp', textAlign: 'center', colWith: '8vw' },
+      // { field: 'ngayHen', header: 'Ngày hẹn nộp', textAlign: 'center', colWith: '8vw' },
+      { field: 'action', header: 'Đã nộp', textAlign: 'center', colWith: '150px' }
     ];
   }
 
@@ -71,6 +75,8 @@ export class TaiLieuComponent implements OnInit {
       this.isShowButtonThemMoi = result.isShowButtonThemMoi;
       this.isShowButtonSua = result.isShowButtonSua;
       this.isShowButtonXoa = result.isShowButtonXoa;
+      this.ngayNop = result.ngayNop ? new Date(result.ngayNop) : null;
+      this.ngayHenNop = result.ngayHenNop ? new Date(result.ngayHenNop) : null;
     }
     else {
       this.showMessage('error', result.messageCode);
@@ -183,9 +189,48 @@ export class TaiLieuComponent implements OnInit {
       this.showMessage('success', result.messageCode);
       this.getListTaiLieuNhanVien();
       this.dataService.changeMessage("Update success"); //thay đổi message để call lại api getListNote trong component NoteTimeline
-    } catch (error) {
+    } 
+    catch (error) {
       this.showMessage('error', error);
     }
+  }
+
+  async changeNgay() {
+    try {
+      setTimeout(async () => {
+        let ngayNop = this.formatDateService.convertToUTCTime(this.ngayNop);
+        let ngayHenNop = this.formatDateService.convertToUTCTime(this.ngayHenNop);
+
+        this.loading = true;
+        let result: any = await this.employeeService.changeNgayNopTaiLieu(this.employeeId, ngayNop, ngayHenNop);
+        this.loading = false;
+
+        if (result.statusCode != 200) {
+          this.showMessage('error', result.messageCode);
+          return;
+        }
+
+        this.showMessage('success', result.messageCode);
+        this.dataService.changeMessage("Update success"); //thay đổi message để call lại api getListNote trong component NoteTimeline
+      }, 1000);
+    } 
+    catch (error) {
+      this.showMessage('error', error);
+    }
+  }
+
+  async changeDaNop(rowData: any) {
+    this.loading = true;
+    let result: any = await this.employeeService.changeDaNop(this.employeeId, rowData.taiLieuNhanVienId, rowData.cauHinhChecklistId, rowData.isDaNop);
+    this.loading = false;
+
+    if (result.statusCode != 200) {
+      this.showMessage('error', result.messageCode);
+      return;
+    }
+
+    this.showMessage('success', result.messageCode);
+    this.dataService.changeMessage("Update success");
   }
 
   cancel() {

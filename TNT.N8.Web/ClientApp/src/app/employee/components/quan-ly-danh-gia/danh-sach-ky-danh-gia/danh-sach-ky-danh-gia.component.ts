@@ -127,13 +127,11 @@ export class DanhSachKyDanhGiaComponent implements OnInit {
       return;
     }
     this.listKyDanhGia = result.listKyDanhGia;
-    console.log(this.listKyDanhGia)
   }
 
   
 
   deleteKyDanhGia(rowData: any) {
-    console.log("rowData",rowData )
     this.confirmationService.confirm({
       message: 'Bạn có chắc chắn muốn xóa?',
       accept: () => {

@@ -59,6 +59,8 @@ class NoiDungTamUngModel {
   deNghiTamHoanUngChiTietId: number;
   parentId: number;
   noiDung: string;
+  donGia: number;
+  soLuong: number;
   tongTienTruocVat: number;
   vat: number;
   tienSauVat: number;
@@ -70,6 +72,8 @@ class NoiDungTamUngModel {
     this.deNghiTamHoanUngChiTietId = null;
     this.noiDung = null;
     this.tongTienTruocVat = 0;
+    this.donGia = 0;
+    this.soLuong = 0;
     this.vat = 0;
     this.tienSauVat = 0;
     this.level = 0;
@@ -212,6 +216,8 @@ export class ChiTietDeNghiTamHoanUngComponent implements OnInit {
   /*End*/
 
   refreshNote: number = 0;
+  thoiGianBatDau: any
+  thoiGianKetThuc: any
 
   constructor(
     private quanLyCongtacService: QuanLyCongTacService,
@@ -284,23 +290,24 @@ export class ChiTietDeNghiTamHoanUngComponent implements OnInit {
 
   setTable() {
     this.colsList = [
+      { field: 'action', header: 'Thao tác', width: '100px', textAlign: 'center', color: '#f44336' },
       { field: 'index', header: 'STT', width: '50px', textAlign: 'center', color: '#f44336' },
       { field: 'ngayThang', header: 'Ngày', width: '200px', textAlign: 'center', color: '#f44336' },
       { field: 'soHoaDon', header: 'Số hóa đơn/số phiếu', width: '120px', textAlign: 'left', color: '#f44336' },
       { field: 'noiDung', header: 'Tóm tắt mục đích chi', width: '200px', textAlign: 'left', color: '#f44336' },
       { field: 'maPhongBan', header: 'Mã phòng ban', width: '120px', textAlign: 'center', color: '#f44336' },
       { field: 'hinhThucThanhToan', header: 'Hình thức thanh toán', width: '120px', textAlign: 'right', color: '#f44336' },
-      { field: 'vanChuyenXm', header: 'Vận chuyển xe máy', width: '100px', textAlign: 'right', color: '#f44336' },
-      { field: 'tienDonHnnb', header: 'Tiễn đón HN-NB', width: '100px', textAlign: 'right', color: '#f44336' },
-      { field: 'tienDonDn', header: 'Tiễn đón ĐN', width: '100px', textAlign: 'right', color: '#f44336' },
-      { field: 'khachSan', header: 'Khách sạn', width: '100px', textAlign: 'right', color: '#f44336' },
+      { field: 'vanChuyenXm', header: 'Vận chuyển xe máy (Max: 750,000/chiều)', width: '110px', textAlign: 'right', color: '#f44336' },
+      { field: 'tienDonHnnb', header: 'Tiễn đón HN-NB (Max: 350,000/chiều)', width: '110px', textAlign: 'right', color: '#f44336' },
+      { field: 'tienDonDn', header: 'Tiễn đón ĐN (Max: 200,000/chiều)', width: '110px', textAlign: 'right', color: '#f44336' },
+      { field: 'khachSan', header: 'Khách sạn (Max: 500,000/chiều)', width: '110px', textAlign: 'right', color: '#f44336' },
       { field: 'chiPhiKhac', header: 'Chi phí khác', width: '100px', textAlign: 'right', color: '#f44336' },
       { field: 'tongTienTruocVat', header: 'Số tiền trước VAT', width: '100px', textAlign: 'right', color: '#f44336' },
-      { field: 'vat', header: 'VAT', width: '80px', textAlign: 'right', color: '#f44336' },
+      { field: 'vat', header: 'VAT (10%)', width: '80px', textAlign: 'right', color: '#f44336' },
       { field: 'tienSauVat', header: 'Số tiền sau VAT', width: '100px', textAlign: 'right', color: '#f44336' },
       { field: 'dinhKemCt', header: 'Đính kèm chứng từ', width: '120px', textAlign: 'left', color: '#f44336' },
       { field: 'ghiChu', header: 'Ghi chú', width: '120px', textAlign: 'left', color: '#f44336' },
-      { field: 'action', header: 'Thao tác', width: '100px', textAlign: 'center', color: '#f44336' },
+
     ];
 
     this.colsFile = [
@@ -314,6 +321,7 @@ export class ChiTietDeNghiTamHoanUngComponent implements OnInit {
   async getMasterData() {
     this.loading = true;
     this.awaitResult = true;
+
     let [result, resultDetail]: any = await Promise.all([
       this.quanLyCongtacService.getMasterDataDeNghiForm(),
       this.quanLyCongtacService.getDataDeNghiDetailForm(this.deNghiTamHoanUngId)
@@ -332,6 +340,14 @@ export class ChiTietDeNghiTamHoanUngComponent implements OnInit {
       this.showToast('error', 'Thông báo:', resultDetail.messageCode);
       return;
     }
+
+    // if (resultDetail.thongTinTamUng) {
+    //   this.tienTamUng = resultDetail.thongTinTamUng.tongTienThanhToan
+    // }
+
+    this.thoiGianBatDau = resultDetail.hoSoCongTac.thoiGianBatDau
+    this.thoiGianKetThuc = resultDetail.hoSoCongTac.thoiGianKetThuc
+
     this.listHoSoCT = result.listHoSoCongTac;
     this.listHoSoCTFull = result.listHoSoCongTacFull;
     this.listHinhThucTT = result.listHinhThucTT;
@@ -379,10 +395,12 @@ export class ChiTietDeNghiTamHoanUngComponent implements OnInit {
 
     this.ngayDeNghiControl.setValue(new Date(this.thongTinDeNghiModel.ngayDeNghi));
     this.loaiDeNghi = this.thongTinDeNghiModel.loaiDeNghi;
-    this.tienTamUng = this.thongTinDeNghiModel.tienTamUng;
+    this.tienTamUng = this.thongTinDeNghiModel.tienTamUng ? ParseStringToFloat(this.thongTinDeNghiModel.tienTamUng.toString()) : 0;
     this.lyDoControl.setValue(this.thongTinDeNghiModel.lyDo);
 
     // Thông tin thanh toán
+
+
     this.listNoiDungTT = resultDetail.listNoiDungTT;
 
     // Hoàn ứng
@@ -398,6 +416,8 @@ export class ChiTietDeNghiTamHoanUngComponent implements OnInit {
     // Tạm ứng
     else if (this.loaiDeNghi == 0) {
       this.listNoiDungTT.forEach(item => {
+        item.soLuong = new Intl.NumberFormat().format(item.soLuong).toString();
+        item.donGia = new Intl.NumberFormat().format(item.donGia).toString();
         item.id = item.deNghiTamHoanUngChiTietId;
       });
       this.listData = this.list_to_tree(this.listNoiDungTT);
@@ -410,6 +430,8 @@ export class ChiTietDeNghiTamHoanUngComponent implements OnInit {
       this.selectedColumns = [
         { field: 'noiDung', header: 'Tóm tắt mục đích chi', width: '40%', textAlign: 'left', color: '#f44336' },
         { field: 'maPhongBan', header: 'Mã phòng ban', width: '15%', textAlign: 'center', color: '#f44336' },
+        { field: 'soLuong', header: 'Số lượng', width: '15%', textAlign: 'center', color: '#f44336' },
+        { field: 'donGia', header: 'Đơn giá', width: '15%', textAlign: 'center', color: '#f44336' },
         { field: 'tongTienTruocVat', header: 'Số tiền trước VAT', width: '15%', textAlign: 'right', color: '#f44336' },
         { field: 'vat', header: 'VAT', width: '5%', textAlign: 'right', color: '#f44336' },
         { field: 'tienSauVat', header: 'Số tiền sau VAT', width: '15%', textAlign: 'right', color: '#f44336' },
@@ -490,6 +512,7 @@ export class ChiTietDeNghiTamHoanUngComponent implements OnInit {
   }
 
   onRowEditSave(rowData: any) {
+    this.tinhToanTongGiaTriTT()
     delete this.clonedData[rowData.id];
   }
 
@@ -524,11 +547,18 @@ export class ChiTietDeNghiTamHoanUngComponent implements OnInit {
       this.listNoiDungTT.forEach(item => {
         let vat = (item.vat == null || item.vat == '') ? 0 : ParseStringToFloat(item.vat);
         if (vat > 100) vat = 100;
-
         let vanChuyenXm = item.vanChuyenXm == null ? 0 : ParseStringToFloat(item.vanChuyenXm.toString());
+        if (vanChuyenXm > 750000) vanChuyenXm = 750000;
+
         let tienDonHnnb = item.tienDonHnnb == null ? 0 : ParseStringToFloat(item.tienDonHnnb.toString());
+        if (tienDonHnnb > 350000) tienDonHnnb = 350000;
+
         let tienDonDn = item.tienDonDn == null ? 0 : ParseStringToFloat(item.tienDonDn.toString());
+        if (tienDonDn > 200000) tienDonDn = 200000;
+
         let khachSan = item.khachSan == null ? 0 : ParseStringToFloat(item.khachSan.toString());
+        if (khachSan > 500000) khachSan = 500000;
+
         let chiPhiKhac = item.chiPhiKhac == null ? 0 : ParseStringToFloat(item.chiPhiKhac.toString());
 
         let truocVAT = vanChuyenXm + tienDonHnnb + tienDonDn + khachSan + chiPhiKhac;
@@ -536,7 +566,7 @@ export class ChiTietDeNghiTamHoanUngComponent implements OnInit {
         item.vat = vat;
         item.vanChuyenXm = vanChuyenXm;
         item.tienDonHnnb = tienDonHnnb;
-        item.tienDonDN = tienDonDn;
+        item.tienDonDn = tienDonDn;
         item.khachSan = khachSan;
         item.chiPhiKhac = chiPhiKhac;
         item.tongTienTruocVat = truocVAT;
@@ -556,12 +586,20 @@ export class ChiTietDeNghiTamHoanUngComponent implements OnInit {
         let vat = (rowData.vat == null || rowData.vat == '') ? 0 : ParseStringToFloat(rowData.vat);
         if (vat > 100) vat = 100;
 
-        let truocVAT = rowData.tongTienTruocVat == null ? 0 : ParseStringToFloat(rowData.tongTienTruocVat.toString());
+        let soLuong = (rowData.soLuong == null || rowData.soLuong == '') ? 0 : rowData.soLuong;
 
+        let donGia = rowData.donGia == null ? 0 : rowData.donGia;
+
+        let truocVAT = ParseStringToFloat(soLuong.toString()) * ParseStringToFloat(donGia.toString());
+
+        rowData.soLuong = soLuong;
+        rowData.donGia = donGia;
         rowData.vat = vat;
         rowData.tongTienTruocVat = truocVAT;
         rowData.tienSauVat = truocVAT * (100 + vat) / 100;
 
+        data.soLuong = soLuong;
+        data.donGia = donGia;
         data.vat = vat;
         data.tongTienTruocVat = truocVAT;
         data.tienSauVat = rowData.tienSauVat;
@@ -642,6 +680,10 @@ export class ChiTietDeNghiTamHoanUngComponent implements OnInit {
         let listNode = this.getNode(item.id, this.listData, []);
 
         item.noiDung = listNode[0].data.noiDung;
+
+        item.soLuong = ParseStringToFloat(item.soLuong.toString());
+        item.donGia = ParseStringToFloat(item.donGia.toString());
+
       });
 
       this.listNoiDungTT.forEach(item => {
@@ -769,6 +811,8 @@ export class ChiTietDeNghiTamHoanUngComponent implements OnInit {
           'parentId': item.parentId,
           'noiDung': item.noiDung,
           'maPhongBan': null,
+          'soLuong': item.soLuong,
+          'donGia': item.donGia,
           'tongTienTruocVat': item.tongTienTruocVat,
           'vat': item.vat,
           'tienSauVat': item.tienSauVat,
@@ -1116,10 +1160,13 @@ export class ChiTietDeNghiTamHoanUngComponent implements OnInit {
         dataChild: dataChild,
         dataParent: dataParent,
         fileTamUng: file,
+        //thêm biến để đọc trong php
+        docSoTien: this.tongTienConLaiCTT.toString().replace(',', '')
       }
 
       this.exportFileWordService.saveFileWord(data, `Đề nghị tạm ứng - ${this.maNV}_${data.nguoiDeNghi} .docx`)
     } else {
+
       var listData: Array<any> = []
       this.listNoiDungTT.forEach(e => {
         let data = {
@@ -1127,15 +1174,16 @@ export class ChiTietDeNghiTamHoanUngComponent implements OnInit {
           date: convertDate(new Date(e.ngayThang)),
           soPhieu: e.soHoaDon,
           tomTat: e.noiDung,
-          hinhThucTT: e.selectedHinhThucThanhToan.categoryName,
-          maPhongBan: e.chiPhiKhac,
+          hinhThucTT: e.selectedHinhThucThanhToan?.categoryName,
+          maPhongBan: this.employeeModel.organizationName,
           xeMay: e.vanChuyenXm,
           tienHN: e.tienDonHnnb,
           tienDN: e.tienDonDn,
           khachSan: e.khachSan,
           tienTruoc: e.tongTienTruocVat,
+          vat: e.vat,
           tienSau: e.tienSauVat,
-          dinhKem: e.dinhKemCt,
+          dinhKem: e.dinhKemCt == 'null' ? '' : e.dinhKemCt,
         }
         listData.push(data)
       });
@@ -1149,7 +1197,10 @@ export class ChiTietDeNghiTamHoanUngComponent implements OnInit {
         soTaiKhoan: this.employeeModel.bankAccount,
         tenTaiKhoan: this.employeeModel.bankOwnerName,
         tongTien: this.tongTien,
+        tamUng: this.tienTamUng,
         tongTienTT: this.tongTienConLaiCTT,
+        thoiGianBatDau: convertDate(new Date(this.thoiGianBatDau)),
+        thoiGianketThuc: convertDate(new Date(this.thoiGianKetThuc)),
         listData: listData
         // dataParent: dataParent,
       }

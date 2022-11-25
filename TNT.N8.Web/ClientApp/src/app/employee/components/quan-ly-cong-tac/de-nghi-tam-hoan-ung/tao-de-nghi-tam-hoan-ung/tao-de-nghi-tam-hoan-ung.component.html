@@ -267,7 +267,8 @@
                         </p-treeTableCellEditor>
                       </ng-container>
                       <ng-container *ngIf="rowData.parentId != null">
-                        <span *ngIf="col.field == 'tongTienTruocVat'">
+
+                        <span *ngIf="col.field == 'soLuong'">
                           <p-treeTableCellEditor>
                             <ng-template pTemplate="input">
                               <input type="text" class="number-input"
@@ -277,6 +278,28 @@
                             <ng-template pTemplate="output">{{rowData[col.field]}}</ng-template>
                           </p-treeTableCellEditor>
                         </span>
+                        <span *ngIf="col.field == 'donGia'">
+                          <p-treeTableCellEditor>
+                            <ng-template pTemplate="input">
+                              <input type="text" class="number-input"
+                                [cleave]="{numeral: true, numeralPositiveOnly: true}" [(ngModel)]="rowData[col.field]"
+                                (change)="tinhToanTongGiaTriTT(rowData)">
+                            </ng-template>
+                            <ng-template pTemplate="output">{{rowData[col.field] }}</ng-template>
+                          </p-treeTableCellEditor>
+                        </span>
+
+                        <span *ngIf="col.field == 'tongTienTruocVat'">
+                          <p-treeTableCellEditor>
+                            <!-- <ng-template pTemplate="input">
+                                <input type="text" class="number-input"
+                                  [cleave]="{numeral: true, numeralPositiveOnly: true, numeralDecimalScale: '2'}"
+                                  [(ngModel)]="rowData[col.field]" (change)="tinhToanTongGiaTriTT(rowData)">
+                            </ng-template> -->
+                            <ng-template pTemplate="output">{{rowData[col.field]  | number: 0 }}</ng-template>
+                          </p-treeTableCellEditor>
+                        </span>
+
                         <span *ngIf="col.field == 'vat'">
                           <p-treeTableCellEditor>
                             <ng-template pTemplate="input">
@@ -288,7 +311,7 @@
                           </p-treeTableCellEditor>
                         </span>
                         <ng-container *ngIf="col.field == 'tienSauVat'">
-                          <span>{{ rowData[col.field] }}</span>
+                          <span>{{ rowData[col.field] | number}}</span>
                         </ng-container>
                       </ng-container>
                       <ng-container *ngIf="col.field == 'maPhongBan'">
@@ -334,6 +357,21 @@
                       [ngStyle]="{ 'text-align': col.textAlign, 'width': col.width }">
 
                       <span class="ui-column-title">{{col.header}}</span>
+
+                      <span *ngSwitchCase="'action'">
+                        <button *ngIf="!editing" pButton type="button" pInitEditableRow icon="pi pi-pencil"
+                          style="margin-left: .5em" class="ui-button-info" (click)="onRowEditInit(rowData)">
+                        </button>
+                        <button *ngIf="!editing" pButton type="button" pCancelEditableRow icon="pi pi-trash"
+                          class="ui-button-danger" style="margin-left: .5em" (click)="onRowRemove(rowData)">
+                        </button>
+                        <button *ngIf="editing" pButton type="button" pSaveEditableRow icon="pi pi-check"
+                          class="ui-button-success" (click)="onRowEditSave(rowData)" style="margin-left: .5em">
+                        </button>
+                        <button *ngIf="editing" pButton type="button" pCancelEditableRow icon="pi pi-times"
+                          class="ui-button-danger" (click)="onRowEditCancel(rowData, index)" style="margin-left: .5em">
+                        </button>
+                      </span>
 
                       <span *ngSwitchCase="'index'">
                         {{ index + 1 }}
@@ -520,21 +558,6 @@
                           </ng-template>
                         </p-cellEditor>
                       </span>
-
-                      <span *ngSwitchCase="'action'">
-                        <button *ngIf="!editing" pButton type="button" pInitEditableRow icon="pi pi-pencil"
-                          style="margin-left: .5em" class="ui-button-info" (click)="onRowEditInit(rowData)">
-                        </button>
-                        <button *ngIf="!editing" pButton type="button" pCancelEditableRow icon="pi pi-trash"
-                          class="ui-button-danger" style="margin-left: .5em" (click)="onRowRemove(rowData)">
-                        </button>
-                        <button *ngIf="editing" pButton type="button" pSaveEditableRow icon="pi pi-check"
-                          class="ui-button-success" (click)="onRowEditSave(rowData)" style="margin-left: .5em">
-                        </button>
-                        <button *ngIf="editing" pButton type="button" pCancelEditableRow icon="pi pi-times"
-                          class="ui-button-danger" (click)="onRowEditCancel(rowData, index)" style="margin-left: .5em">
-                        </button>
-                      </span>
                     </td>
                   </tr>
                 </ng-template>
@@ -558,7 +581,7 @@
                   </div>
                 </div>
 
-                <div class="row buffer-bottom form-group">
+                <div class="row buffer-bottom form-group" *ngIf="loaiDeNghi == 1">
                   <div class="col-md-12" style="display: flex; justify-content: flex-end; align-items: center;">
                     <div class="col-md-6">
                       <span style="font-weight: bold;">Tạm ứng:</span>
@@ -572,7 +595,7 @@
                   </div>
                 </div>
 
-                <div class="row buffer-bottom form-group">
+                <div class="row buffer-bottom form-group" *ngIf="loaiDeNghi == 1">
                   <div class="col-md-12" style="display: flex; justify-content: flex-end; align-items: center;">
                     <div class="col-md-6">
                       <span style="font-weight: bold;">Tổng số tiền còn lại cần thanh toán:</span>

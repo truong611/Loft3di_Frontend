@@ -137,8 +137,9 @@
                 <tr>
                   <th style="width: 10%; text-align: center;">STT</th>
                   <!-- <th style="width: 25%; text-align: center;">Số tiền từ</th> -->
-                  <th style="width: 25%; text-align: center;">Tên cấu hình</th>
-                  <th style="width: 25%; text-align: center;">Quy trình</th>
+                  <th style="width: 20%; text-align: center;">Tên cấu hình</th>
+                  <th style="width: 10%; text-align: center;">Loại cấu hình</th>
+                  <th style="width: 20%; text-align: center;">Quy trình</th>
                   <th style="width: 15%; text-align: center;">Thao tác</th>
                 </tr>
               </ng-template>
@@ -158,6 +159,9 @@
                         (change)="checkSoTien(rowData)"
                         (keydown.enter)="$event.preventDefault()">
                     </span> -->
+                    <span *ngSwitchCase="'loaiCauHinh'">
+                      <span>{{ rowData.loaiCauHinh == 1 ? 'Nhân viên' : (rowData.loaiCauHinh == 2 ? 'Quản lý' : '') }}</span>
+                    </span>
                     <span *ngSwitchCase="'actions'">
                       <button type="button" (click)="themQuyTrinhPheDuyet(rowData)" pTooltip="Thêm quy trình phê duyệt" 
                         tooltipPosition="top" [tooltipDisabled]="false" class="btn-plus-qt">

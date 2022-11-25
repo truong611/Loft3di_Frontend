@@ -67,20 +67,10 @@
                   <span class="text-save-and-new">Phê duyệt</span>
                 </button>
 
-                <button *ngIf="isShowHuyYeuCauPheDuyet" class="save-and-new" type="button" [disabled]="awaitResult"
-                  (click)="huyYeuCacXacNhan()" style="width: 160px !important;">
-                  <span class="text-save-and-new">Hủy yêu cầu xác nhận</span>
-                </button>
-
                 <button #saveAndCreate class="save-and-new" type="button" *ngIf="isShowTuChoi"
                   (click)="openDialogReject()">
                   <span class="text-save-and-new">Từ chối</span>
                 </button>
-
-                <!-- Hủy -->
-                <!-- <button class="cancel" *ngIf="isShowHuy" type="button" [disabled]="awaitResult" (click)="huy()">
-                  <span class="text-cancel">Hủy</span>
-                </button> -->
 
                 <!-- Phân bổ -->
                 <button class="save" *ngIf="(trangThai == 3 && actionCapPhat) && actionCapPhat" type="button"

@@ -40,6 +40,11 @@
               <span class="export-exel-text">Nhập hợp đồng</span>
             </button>
 
+            <button type="button" class="export-exel" *ngIf="actionDownload"
+              (click)="displayChooseFileImportGiaDinh = true">
+              <span class="export-exel-text">Nhập gia đình</span>
+            </button>
+
             <button type="button" class="export-exel" *ngIf="actionDownload" (click)="exportExcel()">
               <span class="export-exel-text">Xuất Excel</span>
             </button>
@@ -399,7 +404,7 @@
       <span>File mẫu</span>
     </div>
     <div class="col-md-8 mt-25" style="margin-bottom:15px;">
-      <button type="button" class="export-exel" (click)="downloadTemplateExcelHopDong()">
+      <button type="button" class="export-exel" (click)="downloadTemplateExcelHopDong(1)">
         <span class="export-exel-text">Tải file mẫu</span>
       </button>
     </div>
@@ -416,6 +421,36 @@
     </div>
     <p-footer>
       <button class="btn-create" type="button" #save (click)="importHopDong()">
+        <span class="btn-create-text">Nhập</span>
+      </button>
+    </p-footer>
+  </div>
+</p-dialog>
+
+<p-dialog header="Nhập file excel thông tin gia đình" [(visible)]="displayChooseFileImportGiaDinh" [modal]="true"
+  [responsive]="true" [style]="{width: '550px', minWidth: '200px'}" [minY]="70" [closable]="true">
+  <div class="employee-list" style="border:unset;" (onHide)="closeChooseFileImportDialog()">
+    <div class="col-md-4 mt-25">
+      <span>File mẫu</span>
+    </div>
+    <div class="col-md-8 mt-25" style="margin-bottom:15px;">
+      <button type="button" class="export-exel" (click)="downloadTemplateExcelHopDong(2)">
+        <span class="export-exel-text">Tải file mẫu</span>
+      </button>
+    </div>
+    <div class="col-md-4 mt-25">
+      <span>Chọn file</span>
+    </div>
+    <div class="col-md-8 mt-25" style="margin-bottom: 15px;">
+      <button class="btn btn-primary btn-file import-file">
+        <span class="text-import">Chọn file</span>
+        <input type="file" id="importFileProduct" (click)="onClickImportBtn($event)" (change)="chooseFile($event)"
+          accept=".xlsx, .xls">
+      </button>
+      <div>{{fileName}}</div>
+    </div>
+    <p-footer>
+      <button class="btn-create" type="button" #save (click)="importGiaDinh()">
         <span class="btn-create-text">Nhập</span>
       </button>
     </p-footer>

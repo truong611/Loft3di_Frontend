@@ -206,13 +206,13 @@ export class DeXuatCongTacChiTietComponent implements OnInit {
     let permission: any = await this.getPermission.getPermission(resource);
     if (permission.status == false) {
       this.showToast('warn', 'Thông báo', 'Bạn không có quyền truy cập vào đường dẫn này vui lòng quay lại trang chủ');
-    this.router.navigate(['/home']);
+      this.router.navigate(['/home']);
     } else {
 
       let listCurrentActionResource = permission.listCurrentActionResource;
       if (listCurrentActionResource.indexOf("view") == -1) {
         this.showToast('warn', 'Thông báo', 'Bạn không có quyền truy cập vào đường dẫn này vui lòng quay lại trang chủ');
-        this.router.navigate(['/home']);      
+        this.router.navigate(['/home']);
       }
       if (listCurrentActionResource.indexOf("add") == -1) {
         this.actionAdd = false;
@@ -221,7 +221,7 @@ export class DeXuatCongTacChiTietComponent implements OnInit {
         this.actionEdit = false;
       }
     }
-    
+
     this.route.params.subscribe(params => {
       this.deXuatCongTacId = Number(this.encrDecrService.get(params['deXuatCongTacId']));
     });
@@ -326,6 +326,7 @@ export class DeXuatCongTacChiTietComponent implements OnInit {
     this.isShowDatVeMoi = resultDetail.isShowDatVeMoi;
 
     this.trangThai = resultDetail.deXuatCongTac.trangThai;
+
     this.trangThaiString = resultDetail.deXuatCongTac.trangThaiString;
 
     // Tên đề xuất
@@ -906,20 +907,20 @@ export class DeXuatCongTacChiTietComponent implements OnInit {
 
   async exportWord() {
     this.loading = true;
-
     let result: any = await this.quanLyCongtacService.getMasterDeXuatCongTacDetail(this.deXuatCongTacId);
     this.loading = false;
     if (result.statusCode == 200) {
       let thongTin = result.deXuatCongTac
       let thoiGianBatDau = convertDate(new Date(thongTin.thoiGianBatDau))
       let thoiGianKetThuc = convertDate(new Date(thongTin.thoiGianKetThuc))
+      let thoiGianPheDuyet = thongTin.updatedDate
 
       for (let i = 0; i < result.deXuatCongTac.listDeXuatCongTacChiTiet.length; i++) {
         let data = {
           template: 1,
           tenNhanVien: result.deXuatCongTac.listDeXuatCongTacChiTiet[i].tenNhanVien,
           maNV: result.deXuatCongTac.listDeXuatCongTacChiTiet[i].maNV,
-          viTriLamViec: result.deXuatCongTac.listDeXuatCongTacChiTiet[i].viTriLamViec,
+          viTriLamViec: result.deXuatCongTac.listDeXuatCongTacChiTiet[i].positionName,
           dateOfBirth: convertDate(new Date(result.deXuatCongTac.listDeXuatCongTacChiTiet[i].dateOfBirth)),
           identity: result.deXuatCongTac.listDeXuatCongTacChiTiet[i].identity,
           identityIddateOfIssue: convertDate(new Date(result.deXuatCongTac.listDeXuatCongTacChiTiet[i].identityIddateOfIssue)),
@@ -930,9 +931,10 @@ export class DeXuatCongTacChiTietComponent implements OnInit {
           thoiGianKetThuc: thoiGianKetThuc,
           phuongTien: thongTin.phuongTien,
           nhiemVu: thongTin.nhiemVu,
-          date: new Date().getDate(),
-          month: new Date().getMonth() + 1,
-          year: new Date().getFullYear(),
+          date: new Date(thoiGianPheDuyet).getDate(),
+          month: new Date(thoiGianPheDuyet).getMonth() + 1,
+          year: new Date(thoiGianPheDuyet).getFullYear(),
+          currentYear: new Date().getFullYear(),
         }
         this.exportFileWordService.saveFileWord(data, `Đề xuất công tác - ${data.maNV}_${data.tenNhanVien}.docx`)
       }

@@ -132,7 +132,6 @@ export class TuyenDungBaoCaoComponent implements OnInit {
 
       this.cols1 = [...this.cols1, header];
     });
-    console.log(this.cols1)
 
     /* build data */
 
@@ -150,7 +149,6 @@ export class TuyenDungBaoCaoComponent implements OnInit {
 
       this.listData = [...this.listData, data];
     });
-    console.log(this.listData);
     //test
     this.rowGroupMetadata = {};
     if (this.listData) {
@@ -181,7 +179,6 @@ export class TuyenDungBaoCaoComponent implements OnInit {
         }
       });
     }
-    console.log(this.rowGroupMetadata)
 
     // /* build footer */
     // this.listDataFooter.forEach(item => {

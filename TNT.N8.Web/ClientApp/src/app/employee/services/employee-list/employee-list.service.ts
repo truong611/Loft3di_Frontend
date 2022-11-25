@@ -51,9 +51,7 @@ export class EmployeeListService {
 
 
   listDeXuatTangLuong(nguoiDeXuatId, thoiGianDeXuat, trangThai) {
-    console.log("1", nguoiDeXuatId)
-    console.log("2", thoiGianDeXuat)
-    console.log("3", trangThai)
+
     const currentUser = <any>localStorage.getItem('auth');
     const url = localStorage.getItem('ApiEndPoint') + '/api/employee/ListDeXuatTangLuong';
     return this.httpClient.post(url, {
@@ -67,7 +65,6 @@ export class EmployeeListService {
   }
 
   deleteDeXuatTangLuong(deXuatId) {
-    console.log("1", deXuatId)
     const currentUser = <any>localStorage.getItem('auth');
     const url = localStorage.getItem('ApiEndPoint') + '/api/employee/DeleteDeXuatTangLuong';
     return this.httpClient.post(url, {
@@ -79,7 +76,6 @@ export class EmployeeListService {
   }
 
   deleteDeXuatChucVu(deXuatId) {
-    console.log("1", deXuatId)
     const currentUser = <any>localStorage.getItem('auth');
     const url = localStorage.getItem('ApiEndPoint') + '/api/employee/DeleteDeXuatChucVu';
     return this.httpClient.post(url, {
@@ -119,7 +115,6 @@ export class EmployeeListService {
     }));
   }
   deleteDeXuatCongTac(deXuatId) {
-    console.log("1", deXuatId)
     const currentUser = <any>localStorage.getItem('auth');
     const url = localStorage.getItem('ApiEndPoint') + '/api/employee/DeleteDeXuatCongTac';
     return this.httpClient.post(url, {

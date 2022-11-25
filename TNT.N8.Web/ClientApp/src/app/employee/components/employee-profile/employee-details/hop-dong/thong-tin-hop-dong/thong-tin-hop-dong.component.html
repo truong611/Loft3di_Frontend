@@ -73,33 +73,3 @@
     </div>
   </div>
 </div>
-
-<p-dialog header="Nhập file excel" [(visible)]="displayChooseFileImportDialog" [modal]="true" [responsive]="true"
-  [style]="{width: '550px', minWidth: '200px'}" [minY]="70" [closable]="true" (onHide)="closeChooseFileImportDialog()">
-  <div class="importExcel" style="border:unset;">
-    <div class="col-md-4 mt-25">
-      <span>File mẫu</span>
-    </div>
-    <div class="col-md-8 mt-25" style="margin-bottom:15px;">
-      <button type="button" class="export-exel" (click)="downloadTemplateExcel()">
-        <span class="export-exel-text">Tải file mẫu</span>
-      </button>
-    </div>
-    <div class="col-md-4 mt-25">
-      <span>Chọn file</span>
-    </div>
-    <div class="col-md-8 mt-25" style="margin-bottom: 15px;">
-      <button class="btn btn-primary btn-file import-file">
-        <span class="text-import">Chọn file</span>
-        <input type="file" id="importFileProduct" (click)="onClickImportBtn($event)" (change)="chooseFile($event)"
-          accept=".xlsx, .xls">
-      </button>
-      <div>{{fileName}}</div>
-    </div>
-    <p-footer>
-      <button class="btn-create" type="button" #save (click)="importHopDong()">
-        <span class="btn-create-text">Nhập</span>
-      </button>
-    </p-footer>
-  </div>
-</p-dialog>

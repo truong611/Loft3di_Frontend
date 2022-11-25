@@ -490,6 +490,8 @@ export class ThongTinChungComponent implements OnInit {
   }
 
   openOrgPopup() {
+    if (!this.isEdit) return;
+    
     let listSelectedId = this.listSelectedDonVi.map(item => item.organizationId);
     let selectedId = null;
     if (listSelectedId.length > 0) {

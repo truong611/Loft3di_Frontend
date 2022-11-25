@@ -1660,7 +1660,6 @@ export class HomeComponent implements OnInit {
       let result: any = response;
       this.loading = false;
       if (result.statusCode == 200) {
-        console.log('result', result)
         if (result.type == 0) {
           this.Title = 'Danh sách nhân viên sinh nhật trong tháng';
           this.selectedColumns = [

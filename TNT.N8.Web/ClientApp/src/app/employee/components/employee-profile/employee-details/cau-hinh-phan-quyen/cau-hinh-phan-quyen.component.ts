@@ -11,6 +11,7 @@ class ThanhVienPhongBan {
   organizationId: string;
   isManager: number; //0: nhân viên, 1: Trưởng bộ phận, 2: Người theo dõi
   organizationName: string;
+  isPhongBanChinh: string;
 }
 
 @Component({
@@ -63,6 +64,7 @@ export class CauHinhPhanQuyenComponent implements OnInit {
       { field: 'truongBoPhan', header: 'Trưởng bộ phận', textAlign: 'center', display: 'table-cell' },
       // { field: 'nguoiTheoDoi', header: 'Người theo dõi', textAlign: 'center', display: 'table-cell' },
       { field: 'nhanVien', header: 'Nhân viên', textAlign: 'center', display: 'table-cell' },
+      { field: 'isPhongBanChinh', header: 'Phòng ban chính', textAlign: 'center', display: 'table-cell' },
       // { field: 'actions', header: 'Thao tác', textAlign: 'center', display: 'table-cell' },
     ];
   }
@@ -120,6 +122,11 @@ export class CauHinhPhanQuyenComponent implements OnInit {
 
     if (this.listSelectedDonVi?.length == 0) {
       this.showMessage('warn', 'Nhân viên phải thuộc ít nhất một đơn vị');
+      return;
+    }
+
+    if (this.listSelectedDonVi?.filter(x => x.isPhongBanChinh).length != 1) {
+      this.showMessage('warn', 'Nhân viên phải thuộc một phòng ban chính');
       return;
     }
 

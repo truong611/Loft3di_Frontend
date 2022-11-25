@@ -134,7 +134,8 @@
                                   <p-dropdown formControlName="mucDanhGia"
                                     [ngClass]="(group.get('mucDanhGia').invalid && (group.get('mucDanhGia').touched)) ? 'error-border' : ''"
                                     class="w100 p-dropdown" [options]="mucDanhGiaNhanVien" placeholder="Lựa chọn mức"
-                                    [style]="{'width': '100%'}" optionLabel="categoryName" [showClear]="true">
+                                    [style]="{'width': '100%'}" optionLabel="categoryName" [showClear]="true"
+                                    appendTo="body" [baseZIndex]="10001">
                                   </p-dropdown>
                                 </span>
                                 <div class="col-md-12 no-padding"
@@ -218,7 +219,7 @@
 
                 <!-- dialog chỉnh sửa đánh giá -->
                 <p-dialog header="Chỉnh sửa mức đánh giá" [(visible)]="isShowChinhSua1" [modal]="true"
-                  [style]="{width: '75%'}" [baseZIndex]="10000" [draggable]="false" [resizable]="false">
+                  [style]="{width: '75%',overflow: 'unset'}" [baseZIndex]="10000" [draggable]="false" [resizable]="false">
                   <div class="box-add-1">
                     <div class="row no-margin">
                       <span class="col-md-12 col-ms-12">
@@ -277,7 +278,7 @@
                                 <span class="ui-float-label">
                                   <p-dropdown formControlName="mucDanhGia"
                                     [ngClass]="(group.get('mucDanhGia').invalid && (group.get('mucDanhGia').touched)) ? 'error-border' : ''"
-                                    class="w100 p-dropdown" [options]="mucDanhGiaNhanVien" placeholder="Lựa chọn mức"
+                                    class="w100 p-dropdown" [options]="mucDanhGiaNhanVien" placeholder="Lựa chọn mức"  appendTo="body" [baseZIndex]="10001"
                                     [style]="{'width': '100%'}" optionLabel="categoryName" [showClear]="true">
                                   </p-dropdown>
                                 </span>

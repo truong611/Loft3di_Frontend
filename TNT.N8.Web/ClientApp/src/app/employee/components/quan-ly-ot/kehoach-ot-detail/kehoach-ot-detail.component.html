@@ -47,10 +47,10 @@
                   <span class="btn-save-text">Lưu</span>
                 </button>
 
-                <button *ngIf="IsShowHuyYeuCauXacNhan" class="btn-save-and-new" type="button" [disabled]="awaitResult"
+                <!-- <button *ngIf="IsShowHuyYeuCauXacNhan" class="btn-save-and-new" type="button" [disabled]="awaitResult"
                   (click)="huyYeuCacXacNhan()" style="width: 160px !important;">
                   <span class="btn-save-and-new-text">Hủy yêu cầu xác nhận</span>
-                </button>
+                </button> -->
 
                 <button #saveAndCreate class="btn-save-and-new" type="button"
                   *ngIf="IsShowTuChoi && !IsPheDuyetTemLead  && trangThaiDeXuat != 10  && trangThaiDeXuat != 11"
@@ -77,7 +77,6 @@
                   *ngIf="(trangThaiDeXuat == 9 || trangThaiDeXuat == 11) && IsNguoiTao" style="width: 120px !important;">
                   <span class="btn-save-text">Đăng ký thêm</span>
                 </button>
-
 
                 <button #save type="button" class="btn-save" (click)="dangKyLai()"
                   *ngIf="(trangThaiDeXuat == 9 || trangThaiDeXuat == 11) && IsNguoiTao" style="width: 90px !important;">

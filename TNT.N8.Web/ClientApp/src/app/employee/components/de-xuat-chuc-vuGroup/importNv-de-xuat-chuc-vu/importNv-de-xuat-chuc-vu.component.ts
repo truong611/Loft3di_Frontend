@@ -126,8 +126,6 @@ export class ImportNvDeXuatChucVuComponent implements OnInit {
     this.listAdded = this.config.data.listAdded;
     this.listAllEmp = this.config.data.listAllEmp;
     this.listPosition = this.config.data.listPosition;
-    console.log("1", this.listAdded)
-    console.log("2", this.listAllEmp)
   }
 
   initTable() {
@@ -140,7 +138,6 @@ export class ImportNvDeXuatChucVuComponent implements OnInit {
   }
 
   checkStatus(autoAdd: boolean) {
-    console.log('this.listEmpImport', this.listEmpImport)
     this.listEmpImport.forEach(customer => {
       customer.chucVuDeXuat = customer.chucVuDeXuatId != null ? customer.chucVuDeXuatId.positionName : customer.chucVuDeXuat;
 

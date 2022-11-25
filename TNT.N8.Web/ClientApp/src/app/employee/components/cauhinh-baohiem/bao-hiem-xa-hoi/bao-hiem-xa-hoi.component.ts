@@ -37,8 +37,8 @@ export class BaoHiemXaHoiComponent implements OnInit {
   bhtnCtyControl: FormControl;
   bhtnnnCtyControl: FormControl;
 
-  mucDongToiDaBHTNControl: FormControl;
-  mucLuongCoSoBHTNControl: FormControl;
+  mucDongToiDaBhtnControl: FormControl;
+  mucLuongCoSoBhtnControl: FormControl;
 
   constructor(
     private messageService: MessageService,
@@ -82,8 +82,8 @@ export class BaoHiemXaHoiComponent implements OnInit {
     this.bhytCtyControl = new FormControl(null, [Validators.required]);
     this.bhtnCtyControl = new FormControl(null, [Validators.required]);
     this.bhtnnnCtyControl = new FormControl(null, [Validators.required]);
-    this.mucDongToiDaBHTNControl = new FormControl(null, [Validators.required]);
-    this.mucLuongCoSoBHTNControl = new FormControl(null, [Validators.required]);
+    this.mucDongToiDaBhtnControl = new FormControl(null, [Validators.required]);
+    this.mucLuongCoSoBhtnControl = new FormControl(null, [Validators.required]);
 
     this.baoHiemForm = new FormGroup({
       loaiDongControl: this.loaiDongControl,
@@ -98,8 +98,8 @@ export class BaoHiemXaHoiComponent implements OnInit {
       bhytCtyControl: this.bhytCtyControl,
       bhtnnnCtyControl: this.bhtnnnCtyControl,
       bhtnCtyControl: this.bhtnCtyControl,
-      mucDongToiDaBHTNControl: this.mucDongToiDaBHTNControl,
-      mucLuongCoSoBHTNControl: this.mucLuongCoSoBHTNControl,
+      mucDongToiDaBhtnControl: this.mucDongToiDaBhtnControl,
+      mucLuongCoSoBhtnControl: this.mucLuongCoSoBhtnControl,
     });
 
     this.baoHiemForm.disable();
@@ -137,10 +137,10 @@ export class BaoHiemXaHoiComponent implements OnInit {
       cauHinhBaoHiemModel.tiLePhanBoMucDongBhtnnncuaNsdld
     );
 
-    this.mucDongToiDaBHTNControl.setValue(
+    this.mucDongToiDaBhtnControl.setValue(
       cauHinhBaoHiemModel.mucDongToiDaBHTN
     );
-    this.mucLuongCoSoBHTNControl.setValue(
+    this.mucLuongCoSoBhtnControl.setValue(
       cauHinhBaoHiemModel.mucLuongCoSoBHTN
     );
 
@@ -198,8 +198,8 @@ export class BaoHiemXaHoiComponent implements OnInit {
     bhxhModel.tiLePhanBoMucDongBhtncuaNsdld = this.commonService.convertStringToNumber(this.bhtnCtyControl.value.toString());
     bhxhModel.tiLePhanBoMucDongBhtnnncuaNsdld = this.commonService.convertStringToNumber(this.bhtnnnCtyControl.value.toString());
 
-    bhxhModel.mucDongToiDaBHTN = this.commonService.convertStringToNumber(this.mucDongToiDaBHTNControl.value.toString());
-    bhxhModel.mucLuongCoSoBHTN = this.commonService.convertStringToNumber(this.mucLuongCoSoBHTNControl.value.toString());
+    bhxhModel.mucDongToiDaBHTN = this.commonService.convertStringToNumber(this.mucDongToiDaBhtnControl.value.toString());
+    bhxhModel.mucLuongCoSoBHTN = this.commonService.convertStringToNumber(this.mucLuongCoSoBhtnControl.value.toString());
 
     if (bhxhModel.tiLePhanBoMucDongBhxhcuaNld > 100 ||
       bhxhModel.tiLePhanBoMucDongBhytcuaNld > 100 ||

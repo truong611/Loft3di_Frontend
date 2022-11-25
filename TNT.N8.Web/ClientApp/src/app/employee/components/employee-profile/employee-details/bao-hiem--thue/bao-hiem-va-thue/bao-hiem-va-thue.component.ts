@@ -211,7 +211,6 @@ export class BaoHiemVaThueComponent implements OnInit {
       // listDoiTuongPhuThuocId: formData.DoiTuongPhuThuoc?.map(x => x.categoryId)
     };
 
-    // console.log(thongTinThueVaGiamTru);return
     this.loading = true;
     let result: any = await this.employeeService.saveThongTinBaoHiemVaThue(this.employeeId, baoHiemXaHoi, baoHiemLoftCare, thongTinThueVaGiamTru);
     this.loading = false;

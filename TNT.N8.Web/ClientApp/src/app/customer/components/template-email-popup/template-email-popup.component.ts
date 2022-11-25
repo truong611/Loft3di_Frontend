@@ -50,7 +50,6 @@ export class TemplateEmailPopupComponent implements OnInit {
     this.loading = false;
 
     if (masterdataResponse.statusCode === 200 && initSearchResponse.statusCode === 200) {
-      console.log(initSearchResponse.listEmailTemplateModel);
       //search response
       this.listEmailTemplateName = initSearchResponse.listEmailTemplateModel;
       this.listEmailTemplateName = this.listEmailTemplateName.filter(x => x.emailTemplateStatusCode == 'CHL');

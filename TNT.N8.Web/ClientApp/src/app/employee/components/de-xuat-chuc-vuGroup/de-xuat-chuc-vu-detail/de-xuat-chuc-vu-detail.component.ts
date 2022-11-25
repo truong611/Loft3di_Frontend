@@ -246,9 +246,6 @@ export class DeXuatChucVuDetailComponent implements OnInit {
   IsShowTuChoi: boolean = false;
   IsShowLuu: boolean = false;
   IsShowXoa: boolean = false;
-  IsShowHuy: boolean = false;
-  IsShowHuyYeuCauXacNhan: boolean = false;
-  IsShowHoanThanh: boolean = false;
   IsShowDatVeMoi: boolean = false;
   IsShowNgayApDung: boolean = false;
   NgayCuoiCungKyLuong: Date = null;
@@ -280,6 +277,8 @@ export class DeXuatChucVuDetailComponent implements OnInit {
   viewTimeline: boolean = true;
   statusCode: string = null;
   pageSize = 20;
+
+  thoiGianPheDuyet: any
 
 
   isNguoiPhuTrach: boolean = false;
@@ -450,6 +449,8 @@ export class DeXuatChucVuDetailComponent implements OnInit {
       return;
     }
 
+    this.thoiGianPheDuyet = resultDetail.deXuatChucVu.updatedDate
+
     this.thongTinNhanVienDuocDeXuat = resultDetail.nhanVienDuocDeXuats
 
     this.selectedEmpCheckBox = [];
@@ -541,6 +542,7 @@ export class DeXuatChucVuDetailComponent implements OnInit {
     //Ngày áp dụng mức lương mới
     if (this.trangThaiDeXuat == 3) {
       if (resultDetail.deXuatChucVu.ngayApDung) this.ngayApDungCVFormControl.setValue(new Date(resultDetail.deXuatChucVu.ngayApDung));
+      this.ngayApDungCVFormControl.disable()
     }
 
     //Nếu trạng thái là mới thì disable from
@@ -556,9 +558,6 @@ export class DeXuatChucVuDetailComponent implements OnInit {
     this.IsShowTuChoi = resultDetail.isShowTuChoi;
     this.IsShowLuu = resultDetail.isShowLuu;
     this.IsShowXoa = resultDetail.isShowXoa;
-    this.IsShowHuy = resultDetail.isShowHuy;
-    this.IsShowHuyYeuCauXacNhan = resultDetail.isShowHuyYeuCauXacNhan;
-    this.IsShowHoanThanh = resultDetail.isShowHoanThanh;
     this.IsShowDatVeMoi = resultDetail.isShowDatVeMoi;
     this.IsShowNgayApDung = resultDetail.isShowNgayApDung;
   }
@@ -1306,9 +1305,10 @@ export class DeXuatChucVuDetailComponent implements OnInit {
         address: this.thongTinNhanVienDuocDeXuat[i].address,
         nghiaVu: this.thongTinNhanVienDuocDeXuat[i].nghiaVu,
 
-        date: new Date().getDate(),
-        month: new Date().getMonth() + 1,
-        year: new Date().getFullYear(),
+        date: new Date(this.thoiGianPheDuyet).getDate(),
+        month: new Date(this.thoiGianPheDuyet).getMonth() + 1,
+        year: new Date(this.thoiGianPheDuyet).getFullYear(),
+        currentYear: new Date().getFullYear(),
       }
       this.exportFileWordService.saveFileWord(data, `Quyết định bổ nhiệm - ${data.employeeCode}_${data.employeeName}.docx`)
     }

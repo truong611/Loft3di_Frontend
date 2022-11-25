@@ -119,10 +119,8 @@ export class YeuCauCapPhatDetailComponent implements OnInit {
   isShowGuiPheDuyet: boolean = false;
   isShowPheDuyet: boolean = false;
   isShowTuChoi: boolean = false;
-  isShowHuyYeuCauPheDuyet: boolean = false;
   isShowLuu: boolean = false;
   isShowXoa: boolean = false;
-  isShowHuy: boolean = false;
   isShowDatVeMoi: boolean = false;
   isShowHoanThanh: boolean = false;
   trangThai: number = 1;
@@ -415,10 +413,8 @@ export class YeuCauCapPhatDetailComponent implements OnInit {
     this.isShowGuiPheDuyet = resultDetail.isShowGuiPheDuyet;
     this.isShowPheDuyet = resultDetail.isShowPheDuyet;
     this.isShowTuChoi = resultDetail.isShowTuChoi;
-    this.isShowHuyYeuCauPheDuyet = resultDetail.isShowHuyYeuCauPheDuyet;
     this.isShowLuu = resultDetail.isShowLuu;
     this.isShowXoa = resultDetail.isShowXoa;
-    this.isShowHuy = resultDetail.isShowHuy;
     this.isShowDatVeMoi = resultDetail.isShowDatVeMoi;
     this.trangThai = resultDetail.yeuCauCapPhat.trangThai;
     this.isShowHoanThanh = resultDetail.isShowHoanThanh;
@@ -743,7 +739,6 @@ export class YeuCauCapPhatDetailComponent implements OnInit {
   }
 
   thayDoiNhanVien(event: any) {
-    console.log('event::: ', event)
     let nhanVien = this.listEmployee.find(x => x.employeeId == event.value.employeeId);
     this.employeeModel = nhanVien;
   }
@@ -1441,7 +1436,6 @@ export class YeuCauCapPhatDetailComponent implements OnInit {
   }
 
   capNhapPhanBo() {
-    debugger
     if (!this.taoPhanBoForm.valid) {
       Object.keys(this.taoPhanBoForm.controls).forEach(key => {
         if (!this.taoPhanBoForm.controls[key].valid) {

@@ -150,7 +150,6 @@ export class DanhSachPhieuDanhGiaComponent implements OnInit {
 
 
   deletePhieuDanhGia(rowData: any) {
-    console.log("rowData", rowData)
     this.confirmationService.confirm({
       message: 'Bạn có chắc chắn muốn xóa?',
       accept: () => {

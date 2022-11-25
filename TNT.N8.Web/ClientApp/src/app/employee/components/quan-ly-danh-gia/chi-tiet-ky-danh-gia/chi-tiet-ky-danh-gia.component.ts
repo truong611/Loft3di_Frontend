@@ -289,7 +289,6 @@ export class ChiTietKyDanhGiaComponent implements OnInit {
   async getMasterData() {
     this.loading = true;
     let result: any = await this.employeeService.kyDanhGiaDetail(this.kyDanhGiaId);
-    console.log('res : ', result)
     this.loading = false;
     if (result.statusCode != 200) {
       let msg = { severity: 'error', summary: 'Thông báo:', detail: result.message };
@@ -467,7 +466,6 @@ export class ChiTietKyDanhGiaComponent implements OnInit {
     //Đang gán người đánh giá
     if (trangThai == 1) {
       let result: any = await this.employeeService.layNhanVienCungCapVaCapDuoiOrg(data.phongBanId, trangThai, this.kyDanhGiaId);
-      console.log('res : ', result)
       this.loading = false;
       if (result.statusCode != 200) {
         let msg = { severity: 'error', summary: 'Thông báo:', detail: result.message };
@@ -491,7 +489,6 @@ export class ChiTietKyDanhGiaComponent implements OnInit {
     //Đang đánh giá
     if (trangThai == 2 || trangThai == 3 || trangThai == 4) {
       let result: any = await this.employeeService.layNhanVienCungCapVaCapDuoiOrg(data.phongBanId, trangThai, this.kyDanhGiaId);
-      console.log('res : ', result)
       this.loading = false;
       if (result.statusCode != 200) {
         let msg = { severity: 'error', summary: 'Thông báo:', detail: result.message };

@@ -752,7 +752,6 @@ export class EmployeeImportDetailComponent implements OnInit {
       var newEmp = this.mapFormToEmployeeModel(item);
       listEmpAdditional.push(newEmp);
     });
-    console.log('listEmpAdditional', listEmpAdditional)
     this.loading = true;
     let result: any = await this.employeeService.importEmployee(listEmpAdditional);
     this.loading = false;
@@ -782,7 +781,7 @@ export class EmployeeImportDetailComponent implements OnInit {
     employeeModel.FirstName = employee.FirstName;
     employeeModel.LastName = employee.LastName;
     employeeModel.DateOfBirth = convertToUTCTime(new Date(employee.DateOfBirth));
-    employeeModel.Gender = employee.Gender;
+    employeeModel.Gender = employee.Gender == "Nam" ? "NAM": "NU";
     employeeModel.OtherPhone = employee.OtherPhone;
     employeeModel.Phone = employee.Phone;
     employeeModel.model = employee.model;

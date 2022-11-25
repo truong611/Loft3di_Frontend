@@ -127,8 +127,6 @@ export class ImportNvDeXuatTangLuongComponent implements OnInit {
     this.listEmpImport = this.config.data.listEmpImport;
     this.listAdded = this.config.data.listAdded;
     this.listAllEmp = this.config.data.listAllEmp;
-    console.log("1", this.listAdded)
-    console.log("2", this.listAllEmp)
   }
 
   initTable() {

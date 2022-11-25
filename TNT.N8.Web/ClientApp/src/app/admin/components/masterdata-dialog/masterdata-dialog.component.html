@@ -10,9 +10,9 @@
           <p *ngIf="formMasterDataCode.hasError('required')" class="error-message-span">
             {{ 'lead.messages.required_field' | translate }}
           </p>
-          <p *ngIf="formMasterDataCode.hasError('pattern')" class="error-message-span">Chỉ được nhập số và ký tự không
+          <!-- <p *ngIf="formMasterDataCode.hasError('pattern')" class="error-message-span">Chỉ được nhập số và ký tự không
             dấu
-          </p>
+          </p> -->
           <p *ngIf="formMasterDataCode.errors?.maxlength" class="error-message-span">Tối đa 10 ký tự
           </p>
         </div>

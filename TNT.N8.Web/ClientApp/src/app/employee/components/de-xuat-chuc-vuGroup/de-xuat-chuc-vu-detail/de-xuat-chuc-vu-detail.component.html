@@ -49,12 +49,6 @@
                   *ngIf="IsShowLuu && actionEdit">
                   <span class="btn-save-text">Lưu</span>
                 </button>
-                <!-- Chờ phê duyệt -->
-
-                <button *ngIf="IsShowHuyYeuCauXacNhan" class="btn-save-and-new" type="button" [disabled]="awaitResult"
-                  (click)="huyYeuCacXacNhan()" style="width: 160px !important;">
-                  <span class="btn-save-and-new-text">Hủy yêu cầu xác nhận</span>
-                </button>
 
                 <button #saveAndCreate class="btn-save-and-new" type="button" *ngIf="IsShowTuChoi"
                   (click)="showLyDoTuChoi = true;lyDoTuChoi = '';tuChoiType = 1;">
@@ -65,17 +59,12 @@
                   *ngIf="IsShowXacNhan">
                   <span class="btn-save-text">Phê duyệt</span>
                 </button>
+
                 <!-- Từ chối -->
                 <button #save type="button" class="btn-save" (click)="datVeMoi()" *ngIf="IsShowDatVeMoi"
                   style="width: 90px !important;">
                   <span class="btn-save-text">Đặt về mới</span>
                 </button>
-
-                <!-- Hủy -->
-                <!-- <button class="save-and-new" *ngIf="IsShowHuy" type="button" [disabled]="awaitResult"
-                                    (click)="huy()">
-                                    <span class="text-save-and-new">Hủy</span>
-                                </button> -->
               </div>
             </div>
             <div style="clear: both;"></div>

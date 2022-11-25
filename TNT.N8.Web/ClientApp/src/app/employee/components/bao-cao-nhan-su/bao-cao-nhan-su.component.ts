@@ -377,7 +377,6 @@ export class BaoCaoNhanSuComponent implements OnInit {
 
     if (this.searchLoaiBieuDo) {
       var data = this.loaiBieuDo.find(x => x.key == this.searchLoaiBieuDo.value.key);
-      console.log('loai bieu do: ' + data.name + ' ||| thoi gian tu: ', this.startTimeBieuDo.value + ' ||| thoi gian den: ' + this.endTimeBieuDo.value)
 
       if (data.key == 'chart12') {
         if (!this.thongTinBieuDoChart12.valid) {
@@ -1668,7 +1667,6 @@ export class BaoCaoNhanSuComponent implements OnInit {
     this.myTable.filter(data.searchThamNienTu, 'thamNienTu', 'gte');
     this.myTable.filter(data.searchThamNienDen, 'thamNienDen', 'lte');
 
-    console.log('search thông tin: ', data);
   }
 
   refreshFilter() {

@@ -117,7 +117,6 @@ export class ChienDichDashboardComponent implements OnInit {
   async ngOnInit() {
     let resource = "rec/employee/dashboard-chien-dich/";
     let permission: any = await this.getPermission.getPermission(resource);
-    console.log(permission)
     if (permission.status == false) {
       this.router.navigate(['/home']);
       return;

@@ -10,7 +10,6 @@ export class ThongTinDanhGiaComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    console.log('4')
   }
 
 }

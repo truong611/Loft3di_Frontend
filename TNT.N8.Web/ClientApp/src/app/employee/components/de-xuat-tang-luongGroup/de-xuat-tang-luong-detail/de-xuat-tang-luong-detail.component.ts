@@ -280,8 +280,6 @@ export class DeXuatTangLuongDetailComponent implements OnInit {
   IsShowTuChoi: boolean = false;
   IsShowLuu: boolean = false;
   IsShowXoa: boolean = false;
-  IsShowHuy: boolean = false;
-  IsShowHuyYeuCauXacNhan: boolean = false;
   IsShowHoanThanh: boolean = false;
   IsShowDatVeMoi: boolean = false;
   IsShowNgayApDung: boolean = false;
@@ -333,6 +331,9 @@ export class DeXuatTangLuongDetailComponent implements OnInit {
   viewNote: boolean = true;
   viewTimeline: boolean = true;
   pageSize = 20;
+
+  thoiGianPheDuyet: any;
+  nguoiDeXuatName: string = null;
 
   constructor(
     private router: Router,
@@ -508,6 +509,10 @@ export class DeXuatTangLuongDetailComponent implements OnInit {
       this.showMessage(msg);
       return;
     }
+
+    this.thoiGianPheDuyet = resultDetail.deXuatTangLuong.updatedDate;
+    this.nguoiDeXuatName = resultDetail.deXuatTangLuong.nguoiDeXuatName;
+
     this.selectedEmpCheckBox = [];
 
     this.companyConfig = resultDetail.companyConfig;
@@ -594,6 +599,9 @@ export class DeXuatTangLuongDetailComponent implements OnInit {
 
 
     this.trangThaiDeXuat = resultDetail.deXuatTangLuong.trangThai;
+    if (this.trangThaiDeXuat == 3) {
+      this.ngayApDungLuongFormControl.disable()
+    }
     this.loaiDeXuatType = resultDetail.deXuatTangLuong.loaiDeXuat;
     this.tinhTongTang();
     this.setCols();
@@ -623,9 +631,6 @@ export class DeXuatTangLuongDetailComponent implements OnInit {
     this.IsShowTuChoi = resultDetail.isShowTuChoi;
     this.IsShowLuu = resultDetail.isShowLuu;
     this.IsShowXoa = resultDetail.isShowXoa;
-    this.IsShowHuy = resultDetail.isShowHuy;
-    this.IsShowHuyYeuCauXacNhan = resultDetail.isShowHuyYeuCauXacNhan;
-    this.IsShowHoanThanh = resultDetail.isShowHoanThanh;
     this.IsShowDatVeMoi = resultDetail.isShowDatVeMoi;
     this.IsShowNgayApDung = resultDetail.isShowNgayApDung;
   }
@@ -1577,9 +1582,10 @@ export class DeXuatTangLuongDetailComponent implements OnInit {
     let data = {
       template: 2,
       ngayApDungLuong: ngayApDungLuong,
-      date: new Date().getDate(),
-      month: new Date().getMonth() + 1,
-      year: new Date().getFullYear()
+      date: new Date(this.thoiGianPheDuyet).getDate(),
+      month: new Date(this.thoiGianPheDuyet).getMonth() + 1,
+      year: new Date(this.thoiGianPheDuyet).getFullYear(),
+      currentYear: new Date().getFullYear()
     }
     this.exportFileWordService.saveFileWord(data, 'Quyết định tăng lương.docx');
     this.exportExcel();

@@ -95,6 +95,7 @@ export class TaoMoiQuyTrinhComponent implements OnInit {
       { field: 'stt', header: 'STT', textAlign: 'center', display: 'table-cell' },
       // { field: 'soTienTu', header: 'Số tiền từ', textAlign: 'right', display: 'table-cell' },
       { field: 'tenCauHinh', header: 'Tên cấu hình', textAlign: 'center', display: 'table-cell' },
+      { field: 'loaiCauHinh', header: 'Loại cấu hình', textAlign: 'center', display: 'table-cell' },
       { field: 'quyTrinh', header: 'Quy trình', textAlign: 'center', display: 'table-cell' },
       { field: 'actions', header: 'Thao tác', textAlign: 'center', display: 'table-cell' },
     ];
@@ -143,6 +144,7 @@ export class TaoMoiQuyTrinhComponent implements OnInit {
     ref.onClose.subscribe((result: any) => {
       if (result) {
         rowData = result;
+        this.checkSoTien();
       }
     });
   }
@@ -154,24 +156,36 @@ export class TaoMoiQuyTrinhComponent implements OnInit {
 
   /*Lấy list Price có giá trị đã được nhập nhiều hơn 1 lần giống nhau*/
   checkSoTien() {
-    let listPrice = this.listCauHinhQuyTrinh.map(x => x.soTienTu.toString());
+    let listPrice = this.listCauHinhQuyTrinh.map(x => {
+      let newItem = {
+        soTienTu: x.soTienTu.toString(),
+        loaiCauHinh: x.loaiCauHinh
+      };
+      
+      return JSON.stringify(newItem);
+    });
 
     let uniq = listPrice
-      .map((price) => {
+      .map((name) => {
         return {
           count: 1,
-          price: price
+          name: name
         }
       })
       .reduce((a, b) => {
-        a[b.price] = (a[b.price] || 0) + b.count
+        a[b.name] = (a[b.name] || 0) + b.count
         return a
       }, {});
 
     let duplicates = Object.keys(uniq).filter((a) => uniq[a] > 1);
 
     this.listCauHinhQuyTrinh.forEach(item => {
-      if (duplicates.includes(item.soTienTu.toString())) {
+      let temp = JSON.stringify({
+        soTienTu: item.soTienTu.toString(),
+        loaiCauHinh: item.loaiCauHinh
+      });
+
+      if (duplicates.includes(temp)) {
         item.error = true;
       }
       else {

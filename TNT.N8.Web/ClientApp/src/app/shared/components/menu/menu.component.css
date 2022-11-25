@@ -530,13 +530,13 @@ a {
 }
 
  /*add scroll menu  */
- ::ng-deep .sidebar-mini:not(.sidebar-collapse) .dashboard-home .main-sidebar {
+ ::ng-deep .sidebar-mini:not(.sidebar-collapse) .main-sidebar{
   height: 100vh;
   -ms-overflow-style: none;
   scrollbar-width: none;
   overflow-y: scroll;
 }
 
-::ng-deep .sidebar-mini:not(.sidebar-collapse) .dashboard-home .main-sidebar::-webkit-scrollbar {
+::ng-deep .sidebar-mini:not(.sidebar-collapse) .main-sidebar .sidebar ::-webkit-scrollbar {
   display: none;
 }

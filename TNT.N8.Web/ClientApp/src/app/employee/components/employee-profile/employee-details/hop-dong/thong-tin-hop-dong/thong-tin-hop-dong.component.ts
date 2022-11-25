@@ -189,7 +189,7 @@ export class ThongTinHopDongComponent implements OnInit {
     reader.onload = (e: any) => {
       /* read workbook */
       const bstr: string = e.target.result;
-      const workbook: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary', cellText: true });
+      const workbook: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary', cellText: true    });
       let code = 'ImpotHDNS';
       if (!workbook.Sheets[code]) {
         let mgs = { severity: 'error', summary: 'Thông báo:', detail: "File không hợp lệ" };
@@ -211,7 +211,7 @@ export class ThongTinHopDongComponent implements OnInit {
       //lấy data từ file excel
       const worksheetProduct: XLSX.WorkSheet = workbook.Sheets[code];
       /* save data */
-      let listTaiSanRawData: Array<any> = XLSX.utils.sheet_to_json(worksheetProduct, { header: 1 });
+      let listTaiSanRawData: Array<any> = XLSX.utils.sheet_to_json(worksheetProduct, { header: 1});
       /* remove header */
       listTaiSanRawData = listTaiSanRawData.filter((e, index) => index != 0);
       /* nếu không nhập 2 trường required: tên + mã khách hàng thì loại bỏ */
@@ -228,7 +228,6 @@ export class ThongTinHopDongComponent implements OnInit {
       });
       /* tắt dialog import file, bật dialog chi tiết khách hàng import */
       this.displayChooseFileImportDialog = false;
-      console.log('listTaiSanRawImport', listTaiSanRawImport)
       this.openDetailImportDialog(listTaiSanRawImport);
     }
   }
@@ -276,30 +275,6 @@ export class ThongTinHopDongComponent implements OnInit {
     this.displayChooseFileImportDialog = true;
   }
 
-  async downloadTemplateExcel() {
-    this.loading = true;
-    let result: any = await this.employeeService.downloadTemplateImportHDNS();
-    this.loading = false;
-    if (result.templateExcel != null && result.statusCode === 200) {
-      const binaryString = window.atob(result.templateExcel);
-      const binaryLen = binaryString.length;
-      const bytes = new Uint8Array(binaryLen);
-      for (let idx = 0; idx < binaryLen; idx++) {
-        const ascii = binaryString.charCodeAt(idx);
-        bytes[idx] = ascii;
-      }
-      const blob = new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-      const link = document.createElement('a');
-      link.href = window.URL.createObjectURL(blob);
-      const fileName = result.fileName + ".xlsx";
-      link.download = fileName;
-      link.click();
-    } else {
-      this.displayChooseFileImportDialog = false;
-      let msg = { severity: 'error', summary: 'Thông báo:', detail: 'Download file thất bại' };
-      this.messageService.add(msg);
-    }
-  }
   
   onClickImportBtn(event: any) {
     /* clear value của file input */

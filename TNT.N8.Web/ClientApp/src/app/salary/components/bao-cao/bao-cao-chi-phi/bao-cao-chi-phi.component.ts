@@ -145,7 +145,6 @@ export class BaoCaoChiPhiComponent implements OnInit {
       if (this.searchLoaiBieuDo) {
         var data = this.loaiBieuDo.find(x => x.key == this.searchLoaiBieuDo.value.key)
 
-        console.log('loai bieu do: ' + data.name + ' ||| thoi gian tu: ', this.thoiGianTu.value + ' ||| thoi gian den: ' + this.thoiGianDen.value)
 
 
         if (data.key == 'chart12') {

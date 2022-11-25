@@ -210,7 +210,6 @@ export class ThuHoiTaiSanComponent implements OnInit {
   }
 
   setDefaultForm() {
-    console.log(this.listTaiSanDefault)
     let taiSan = this.listTaiSanDefault.find(x => x.taiSanId == this.taiSanId)
     if (taiSan != null && taiSan != undefined) {
       let phanLoai = this.listLoaiTSPB.find(x => x.categoryId == taiSan.phanLoaiTaiSanId)

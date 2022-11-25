@@ -50,13 +50,6 @@
                   <span class="btn-save-text">Lưu</span>
                 </button>
 
-                <!-- Chờ phê duyệt -->
-
-                <button *ngIf="IsShowHuyYeuCauXacNhan" class="btn-save-and-new" type="button" [disabled]="awaitResult"
-                  (click)="huyYeuCacXacNhan()" style="width: 160px !important;">
-                  <span class="btn-save-and-new-text">Hủy yêu cầu xác nhận</span>
-                </button>
-
                 <button #saveAndCreate class="btn-save-and-new" type="button" *ngIf="IsShowTuChoi"
                   (click)="showLyDoTuChoi = true;lyDoTuChoi = '';tuChoiType = 1;">
                   <span class="btn-save-and-new-text">Từ chối</span>
@@ -72,12 +65,6 @@
                   style="width: 90px !important;">
                   <span class="btn-save-text">Đặt về mới</span>
                 </button>
-
-                <!-- Hủy -->
-                <!-- <button class="save-and-new" *ngIf="IsShowHuy" type="button" [disabled]="awaitResult"
-                                    (click)="huy()">
-                                    <span class="btn-save-and-new-text">Hủy</span>
-                                </button> -->
 
               </div>
             </div>
@@ -199,16 +186,17 @@
                         <div class="col-md-12" style="margin-top: 7px;">
                           <label>
                             <strong>
-                              {{nguoiDeXuatFormControl?.value?.employeeName}}
+                              {{nguoiDeXuatName}}
+                              <!-- {{nguoiDeXuatFormControl?.value?.employeeName}} -->
                             </strong>
                           </label>
                         </div>
-                        <div class="col-md-12"
+                        <!-- <div class="col-md-12"
                           [hidden]="nguoiDeXuatFormControl.valid || nguoiDeXuatFormControl.untouched">
                           <span
                             *ngIf="nguoiDeXuatFormControl.hasError('required') || nguoiDeXuatFormControl.hasError('blankString') "
                             class="error-message-span"> Không được để trống</span>
-                        </div>
+                        </div> -->
                       </div>
                     </div>
                   </div>

@@ -81,6 +81,9 @@ export class QuyLuongComponent implements OnInit {
   ) { }
 
   async ngOnInit() {
+    this.setForm()
+    this.initTable()
+
     let resource = "hrm/employee/quy-luong/";
     let permission: any = await this.getPermission.getPermission(resource);
     if (permission.status == false) {
@@ -105,9 +108,8 @@ export class QuyLuongComponent implements OnInit {
       }
     }
 
-    this.setForm()
+
     await this.getMasterData()
-    this.initTable()
   }
 
   async getMasterData() {

@@ -2,15 +2,25 @@
 
 <div class="them-qtpd">
   <div class="mt-20"></div>
-  <div class="row no-margin">
-    <div class="col-md-3">
+  <div class="row no-margin" [formGroup]="formTenCauHinh">
+    <div class="col-md-2">
       Tên cấu hình:
     </div>
-    <div class="col-md-7" [formGroup]="formTenCauHinh">
+    <div class="col-md-3">
       <input type="text" [style]="{'width':'100%'}" pInputText 
         formControlName="tenCauHinhControl"
         [ngClass]="tenCauHinhControl.invalid && tenCauHinhControl.touched ? 'error-border': ''"
       />
+    </div>
+    <div class="col-md-2">
+      Loại cấu hình:
+    </div>
+    <div class="col-md-4">
+      <p-dropdown [options]="listLoaiCauHinh" formControlName="loaiCauHinhControl"
+        placeholder="Chọn loại cấu hình" optionLabel="name" [style]="{'width': '100%'}"
+        [styleClass]="loaiCauHinhControl.touched && loaiCauHinhControl.errors?.required ? 'error-border': ''"
+      >
+      </p-dropdown>
     </div>
   </div>
 
@@ -42,14 +52,14 @@
                     >
                     </p-dropdown>
                   </div>
-                  <div *ngIf="quyTrinh.controls[i].get('loaiPheDuyet').value && quyTrinh.controls[i].get('loaiPheDuyet').value?.value != 1" class="col-md-12 mt-10">
+                  <div *ngIf="quyTrinh.controls[i].get('loaiPheDuyet').value && quyTrinh.controls[i].get('loaiPheDuyet').value?.value == 2" class="col-md-12 mt-10">
                     <p-chips formControlName="phongBan" [style]="{'width': '100%'}">
                     </p-chips>
                   </div>
                 </div>
               </div>
               <div class="col-md-2">
-                <ng-container *ngIf="quyTrinh.controls[i].get('loaiPheDuyet').value && quyTrinh.controls[i].get('loaiPheDuyet').value?.value != 1">
+                <ng-container *ngIf="quyTrinh.controls[i].get('loaiPheDuyet').value && quyTrinh.controls[i].get('loaiPheDuyet').value?.value == 2">
                   <span class="hyperlink" (click)="openPopup(i)">Chọn phòng ban</span>
                 </ng-container>
               </div>

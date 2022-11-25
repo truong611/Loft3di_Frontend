@@ -44,9 +44,9 @@
               Tạo mới
             </button>
 
-            <button type="button" class="btn-create" (click)="showChoseReport = true" style="margin-right: 7px;">
+            <!-- <button type="button" class="btn-create" (click)="showChoseReport = true" style="margin-right: 7px;">
               Xuất báo cáo
-            </button>
+            </button> -->
 
             <!-- <button type="button" class="btn-create" (click)="excel5()" style="margin-right: 7px;">
               Excel 5
@@ -229,7 +229,7 @@
       <label>Chọn loại báo cáo<span class="required">*</span>:</label>
       <p-dropdown [options]="listBaoCao" [virtualScroll]="true" itemSize="30" [(ngModel)]="baoCaoNumber" class="w-100"
         [filter]="true" [showClear]="true" [resetFilterOnHide]="true" placeholder="Chọn loại báo cáo" optionLabel="name"
-        [style]="{'width': '100%'}"  appendTo="body">
+        [style]="{'width': '100%'}" appendTo="body">
       </p-dropdown>
     </div>
 

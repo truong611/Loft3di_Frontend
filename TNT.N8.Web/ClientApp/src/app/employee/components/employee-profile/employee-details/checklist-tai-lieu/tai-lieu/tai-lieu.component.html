@@ -8,7 +8,28 @@
     <div class="col-md-3">
       <p class="title-tab">Tài liệu</p>
     </div>
-    <div class="col-md-9 text-right">
+    <div class="col-md-9 ">
+      
+    </div>
+  </div>
+  <div class="row" style="margin-top: 10px">
+    <div class="col-md-6">
+      <div class="row">
+        <div class="col-md-3 form-group">
+          <label>Ngày nộp:</label>
+          <p-calendar dateFormat="dd/mm/yy" [baseZIndex]="9999" [(ngModel)]="ngayNop" [style]="{'width':'100%'}"
+            showButtonBar="true" [inputStyle]="{'width':'100%'}" appendTo="body" (onBlur)="changeNgay()">
+          </p-calendar>
+        </div>
+        <div class="col-md-3 form-group">
+          <label>Ngày hẹn nộp:</label>
+          <p-calendar dateFormat="dd/mm/yy" [baseZIndex]="9999" [(ngModel)]="ngayHenNop" [style]="{'width':'100%'}"
+            showButtonBar="true" [inputStyle]="{'width':'100%'}" appendTo="body" (onBlur)="changeNgay()">
+          </p-calendar>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 text-right">
       <button *ngIf="isShowButtonTuChoi" pButton type="button" label="Từ chối" class="btn btn-back" (click)="tuChoi()"></button>
       <button *ngIf="isShowButtonXacNhan" pButton type="button" label="Xác nhận" class="btn btn-back ml-1" (click)="xacNhan()"></button>
       <button *ngIf="isShowButtonYeuCauXacNhan" pButton type="button" label="Yêu cầu xác nhận" class="btn btn-back ml-1" (click)="yeuCauXacNhan()"></button>
@@ -37,16 +58,17 @@
               <span *ngSwitchCase="'stt'">
                 {{ index + 1}}
               </span>
-              <span *ngSwitchCase="'ngayNop'">
+              <!-- <span *ngSwitchCase="'ngayNop'">
                 {{ rowData[col.field] | date: 'dd/MM/yyyy'}}
               </span>
               <span *ngSwitchCase="'ngayHen'">
                 {{ rowData[col.field] | date: 'dd/MM/yyyy'}}
-              </span>
+              </span> -->
               <span *ngSwitchCase="'action'">
-                <button *ngIf="isShowButtonSua" pButton icon="pi pi-pencil" (click)="addTaiLieu(rowData)"></button>
+                <p-checkbox [(ngModel)]="rowData.isDaNop" [binary]="true" (onChange)="changeDaNop(rowData)"></p-checkbox>
+                <!-- <button *ngIf="isShowButtonSua" pButton icon="pi pi-pencil" (click)="addTaiLieu(rowData)"></button>
                 <button class="ui-button-danger ml-1" pButton icon="pi pi-trash" (click)="deleteTaiLieu(rowData)"
-                  *ngIf="isShowButtonXoa && rowData.taiLieuNhanVienId"></button>
+                  *ngIf="isShowButtonXoa && rowData.taiLieuNhanVienId"></button> -->
               </span>
               <span *ngSwitchDefault>{{rowData[col.field]}}</span>
             </td>

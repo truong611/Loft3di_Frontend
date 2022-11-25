@@ -85,7 +85,7 @@ export class MasterdataDialogComponent implements OnInit {
     this.filterData();
 
     let pattern = '^[a-zA-Z0-9]*$';
-    this.formMasterDataCode = new FormControl(this.categoryModel.CategoryCode, [Validators.required, Validators.pattern(pattern), Validators.maxLength(10)]);
+    this.formMasterDataCode = new FormControl(this.categoryModel.CategoryCode, [Validators.required, Validators.maxLength(10)]);
     this.formMasterDataName = new FormControl(this.categoryModel.CategoryName, [Validators.required, Validators.maxLength(600)]);
 
     this.formMasterDataOrder = new FormControl(this.categoryModel.SortOrder, [Validators.required, Validators.pattern(pattern), Validators.maxLength(2)]);
@@ -142,7 +142,7 @@ export class MasterdataDialogComponent implements OnInit {
       }
     } else {
       this.categoryService
-        .createCategory(this.formMasterDataName.value ?.trim(), this.formMasterDataCode.value ?.trim(), this.dialogData.selectedCategoryTypeId, this.formMasterDataOrder.value)
+        .createCategory(this.formMasterDataName.value?.trim(), this.formMasterDataCode.value?.trim(), this.dialogData.selectedCategoryTypeId, this.formMasterDataOrder.value)
         .subscribe(response => {
           let result = <any>response;
           if (result.statusCode === 202 || result.statusCode === 200) {
@@ -175,7 +175,7 @@ export class MasterdataDialogComponent implements OnInit {
       }
     } else {
 
-      this.categoryService.editCategoryById(this.dialogData.selectedCategoryId, this.formMasterDataName.value ?.trim(), this.formMasterDataCode.value ?.trim(), this.formMasterDataOrder.value).subscribe(response => {
+      this.categoryService.editCategoryById(this.dialogData.selectedCategoryId, this.formMasterDataName.value?.trim(), this.formMasterDataCode.value?.trim(), this.formMasterDataOrder.value).subscribe(response => {
         let result = <any>response;
         if (result.statusCode === 202 || result.statusCode === 200) {
           this.dialogData.categoryEdited = true;

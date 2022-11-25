@@ -194,7 +194,6 @@ export class TaoMoiKyDanhGiaComponent implements OnInit {
       return;
     }
 
-    console.log('res: ', result)
 
     this.soTienChoPhep = result.soTienQuyLuongConLai
     this.listPhongBan = result.listPhongBan;
@@ -424,7 +423,7 @@ export class TaoMoiKyDanhGiaComponent implements OnInit {
 
   }
 
-  addPhongBanToList() {
+  async addPhongBanToList() {
     if (!this.formPhongBan.valid) {
       Object.keys(this.formPhongBan.controls).forEach(key => {
         if (!this.formPhongBan.controls[key].valid) {
@@ -438,6 +437,20 @@ export class TaoMoiKyDanhGiaComponent implements OnInit {
       this.showMessage(msg);
       return
     }
+
+    
+    let listPhongBanId = this.listPhongBanTable.map(m => m.phongBanId);
+    let phongBanAddId = this.phongBanControl.value.organizationId
+
+    this.loading = true;
+    let result: any = await this.employeeService.checkPhongBanTaoKyDanhGia(listPhongBanId, phongBanAddId);
+    this.loading = false;
+    if (result.statusCode != 200) {
+      let msg = { severity: 'error', summary: 'Thông báo:', detail: result.message };
+      this.showMessage(msg);
+      return;
+    }
+
 
     let thongTinPhongBan = this.listPhongBan.find(x => x.organizationId == this.phongBanControl.value.organizationId);
     //Nếu không tồn tại thì thêm mới

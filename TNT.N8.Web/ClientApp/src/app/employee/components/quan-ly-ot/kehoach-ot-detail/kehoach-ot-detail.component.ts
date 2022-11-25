@@ -142,7 +142,7 @@ class FileInFolder {
 })
 export class KeHoachOtDetailComponent implements OnInit {
   loading: boolean = false;
-  awaitResult: boolean = false; //Khóa nút lưu, lưu và thêm mới  
+  awaitResult: boolean = false; //Khóa nút lưu, lưu và thêm mới
   statusCode: string = null;
   systemParameterList = JSON.parse(localStorage.getItem('systemParameterList'));
   defaultLimitedFileSize = Number(this.systemParameterList.find(systemParameter => systemParameter.systemKey == "LimitedFileSize").systemValueString) * 1024 * 1024;
@@ -230,9 +230,7 @@ export class KeHoachOtDetailComponent implements OnInit {
   IsShowTuChoi: boolean = false;
   IsShowLuu: boolean = false;
   IsShowXoa: boolean = false;
-  IsShowHuy: boolean = false;
-  IsShowHuyYeuCauXacNhan: boolean = false;
-  IsShowHoanThanh: boolean = false;
+  // IsShowHuyYeuCauXacNhan: boolean = false;
   IsShowDatVeMoi: boolean = false;
   IsHetHanDangKyOT: boolean = false;
   IsHetHanKeHoachOT: boolean = false;
@@ -426,14 +424,14 @@ export class KeHoachOtDetailComponent implements OnInit {
         this.listLoaiOt = result.listLoaiOt;
         this.listLoaiCaOt = result.listLoaiCaOt;
         this.cauHinhOtCaNgay = result.cauHinhOtCaNgay;
-        this.listPhongBan = result.listOrganization.map(x => x.organizationId); // list Id của các phong ban 
+        this.listPhongBan = result.listOrganization.map(x => x.organizationId); // list Id của các phong ban
         this.listPhongBanIn4 = result.listOrganization; //List thông tin của các phòng ban
         this.listEmp = result.currentEmp; // người đăng nhập hiện tại
         this.keHoachOT = result.keHoachOt; // thông tin kế hoạch OT
         this.userTbpOrganizationId = result.userTbpOrganizationId;
 
         this.thanhVienOTList = result.listOTThanhVien; // list nhân viên OT
-        //Trạng thái của thành viên đăng ký OT 
+        //Trạng thái của thành viên đăng ký OT
         // 1: Chờ duyệt
         // 2: Phê duyệt
         // 3: Từ chối
@@ -468,8 +466,8 @@ export class KeHoachOtDetailComponent implements OnInit {
     });
   }
 
-  changeGhiChu(data){
-     this.employeeService.saveGhiChuNhanVienKeHoachOT(data.thanVienOtId, data.ghiChu).subscribe(response => {
+  changeGhiChu(data) {
+    this.employeeService.saveGhiChuNhanVienKeHoachOT(data.thanVienOtId, data.ghiChu).subscribe(response => {
       let result = <any>response;
       this.loading = false;
       if (result.statusCode != 200) {
@@ -547,9 +545,7 @@ export class KeHoachOtDetailComponent implements OnInit {
     this.IsShowTuChoi = data.isShowTuChoi;
     this.IsShowLuu = data.isShowLuu;
     this.IsShowXoa = data.isShowXoa;
-    this.IsShowHuy = data.isShowHuy;
-    this.IsShowHuyYeuCauXacNhan = data.isShowHuyYeuCauXacNhan;
-    this.IsShowHoanThanh = data.isShowHoanThanh;
+    // this.IsShowHuyYeuCauXacNhan = data.isShowHuyYeuCauXacNhan;
     this.IsShowDatVeMoi = data.isShowDatVeMoi;
     this.IsShowDangKyOT = data.isShowDangKyOT;
     this.IsShowHuyDangKyOT = data.isShowHuyDangKyOT;
@@ -578,7 +574,7 @@ export class KeHoachOtDetailComponent implements OnInit {
     this.gioKetThucFormControl.updateValueAndValidity();
 
     switch (loaiCaOt.value) {
-      //Ca sáng 
+      //Ca sáng
       case 1:
         this.gioBatDau = this.cauHinhOtCaNgay?.gioVaoSang.slice(0, this.cauHinhOtCaNgay?.gioVaoSang.lastIndexOf(':'));
         this.gioKetThuc = this.cauHinhOtCaNgay?.gioRaSang.slice(0, this.cauHinhOtCaNgay?.gioRaSang.lastIndexOf(':'));
@@ -938,6 +934,7 @@ export class KeHoachOtDetailComponent implements OnInit {
     }
     this.showChiTietNvOtPhonngBan = true;
     this.thanhVienOTListShow = this.thanhVienOTList.filter(x => x.organizationId == rowData.organizationId);
+    this.thanhVienOTListShow = this.thanhVienOTListShow = this.thanhVienOTListShow.sort(function (a, b) { return a.code - b.code });
   }
 
   huyYeuCacXacNhan() {

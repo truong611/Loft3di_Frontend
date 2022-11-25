@@ -123,7 +123,7 @@
               <span *ngSwitchCase="'notifiSettingName'" pTooltip="{{rowData[col.field]}}"
                 (click)="onViewDetail(rowData)" class="link"
                 tooltipPosition="bottom">
-                {{rowData[col.field].trim().length > 40 ? rowData[col.field].trim().slice(0,40)+'...' : rowData[col.field].trim()}}
+                {{rowData[col.field].trim().length > 150 ? rowData[col.field].trim().slice(0,150)+'...' : rowData[col.field].trim()}}
               </span>
               <span *ngSwitchCase="'active'">
                 <p-checkbox [(ngModel)]="rowData.active" [binary]="true"

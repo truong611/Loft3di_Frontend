@@ -226,7 +226,6 @@ export class ChiTietPhieuDanhGiaComponent implements OnInit {
     this.loading = true;
     let result: any = await this.employeeService.phieuDanhGiaDetail(this.phieuDanhGiaId);
     this.loading = false;
-    console.log(result)
     if (result.statusCode != 200) {
       let msg = { severity: 'error', summary: 'Thông báo:', detail: 'Lấy thông tin không thành công' };
       this.showMessage(msg);

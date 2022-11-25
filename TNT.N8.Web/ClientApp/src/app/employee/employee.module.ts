@@ -143,6 +143,7 @@ import { ThemNhomBaoHiemComponent } from "./components/cauhinh-baohiem/them-nhom
 import { ThemQuyenLoiBaoHiemComponent } from "./components/cauhinh-baohiem/them-quyen-loi-bao-hiem/them-quyen-loi-bao-hiem.component";
 import { EmployeeImportDetailComponent } from './components/employee-import-detail/employee-import-detail.component';
 import { HopDongImportDetailComponent } from './components/employee-profile/employee-details/hop-dong/hop-dong-import-detail/hop-dong-import-detail.component';
+import { GiaDinhImportDetailComponent } from './components/employee-profile/employee-details/thong-tin-gia-dinhs/gia-dinh-import-detail/gia-dinh-import-detail.component';
 
 
 @NgModule({
@@ -255,7 +256,8 @@ import { HopDongImportDetailComponent } from './components/employee-profile/empl
     ThemQuyenLoiBaoHiemComponent,
     EmployeeImportDetailComponent,
     ThemMoiLichsuThanhtoanBaohiemComponent,
-    HopDongImportDetailComponent
+    HopDongImportDetailComponent,
+    GiaDinhImportDetailComponent
   ],
   providers: [
     ContactService,

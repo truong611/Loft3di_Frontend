@@ -4,6 +4,7 @@ export class CauHinhQuyTrinh {
   id: string;
   soTienTu: any;
   tenCauHinh: string;
+  loaiCauHinh: number;
   quyTrinh: string;
   quyTrinhId: string;
   listCacBuocQuyTrinh: Array<CacBuocQuyTrinh>;
@@ -13,6 +14,7 @@ export class CauHinhQuyTrinh {
 
   constructor() {
     this.tenCauHinh = null;
+    this.loaiCauHinh = 1;
     this.quyTrinh = null;
     this.listCacBuocQuyTrinh = [];
     this.error = false;

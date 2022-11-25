@@ -75,7 +75,6 @@ export class HopDongImportDetailComponent implements OnInit {
     { code: "required_EmployeeCode", name: "Nhập mã nhân viên!" },
     { code: "required_LoaiHopDong", name: "Nhập loại hợp đồng!" },
     { code: "required_SoHopDong", name: "Nhập số hợp đồng!" },
-    { code: "required_SoPhuLuc", name: "Nhập số phụ lục!" },
     { code: "required_NgayKyHD", name: "Nhập ngày ký HĐ!" },
     { code: "required_NgayBDLamViec", name: "Nhập ngày bắt đầu làm việc!" },
     { code: "required_NgayKetThucHD", name: "Nhập ngày kết thục HĐ!" },
@@ -150,10 +149,10 @@ export class HopDongImportDetailComponent implements OnInit {
       { field: 'EmployeeCode', header: 'Mã nhân viên', textAlign: 'left', display: 'table-cell', width: '100px', type: 'text', isRequired: true, isList: true },
       { field: 'LoaiHopDong', header: 'Loại hợp đồng', textAlign: 'left', display: 'table-cell', width: '200px', type: 'text', isRequired: true, isList: true },
       { field: 'SoHopDong', header: 'Số hợp đồng', textAlign: 'left', display: 'table-cell', width: '150px', type: 'text', isRequired: true, isList: false },
-      { field: 'SoPhuLuc', header: 'Số phụ lục', textAlign: 'left', display: 'table-cell', width: '150px', type: 'text', isRequired: true, isList: false },
+      { field: 'SoPhuLuc', header: 'Số phụ lục', textAlign: 'left', display: 'table-cell', width: '150px', type: 'text', isRequired: false, isList: false },
       { field: 'NgayKyHD', header: 'Ngày ký hợp đồng', textAlign: 'center', display: 'table-cell', width: '150px', type: 'date', isRequired: true, isList: false },
       { field: 'NgayBDLamViec', header: 'Ngày bắt đầu làm việc', textAlign: 'center', display: 'table-cell', width: '150px', type: 'date', isRequired: true, isList: false },
-      { field: 'NgayKetThucHD', header: 'Ngày kết thúc hợp đồng', textAlign: 'center', display: 'table-cell', width: '150px', type: 'date', isRequired: true, isList: false },
+      { field: 'NgayKetThucHD', header: 'Ngày kết thúc hợp đồng', textAlign: 'center', display: 'table-cell', width: '150px', type: 'date', isRequired: false, isList: false },
       { field: 'ChucVu', header: 'Chức vụ', textAlign: 'center', display: 'table-cell', width: '150px', type: 'text', isRequired: true, isList: true },
       { field: 'MucLuong', header: 'Mức lương', textAlign: 'left', display: 'table-cell', width: '150px', type: 'number', isRequired: false, isList: false },
       { field: 'listStatus', header: 'Trạng thái', textAlign: 'left', display: 'table-cell', width: '250px', type: 'listStatus' },
@@ -172,7 +171,7 @@ export class HopDongImportDetailComponent implements OnInit {
       this.EmployeeCodeInList = this.listTaiSanImport.map(x => x.EmployeeCode);
       this.soPhuLucInList = this.listTaiSanImport.map(x => x.SoPhuLuc);
       this.soHDInDB = this.listHopDong.map(x => x.soHopDong);
-      this.soPhuLucInDB = this.listHopDong.map(x => x.soPhuLuc);
+      // this.soPhuLucInDB = this.listHopDong.map(x => x.soPhuLuc);
       this.employeeCodeInDB = result.listEmployeeCode
 
       this.checkStatus(true);
@@ -215,11 +214,6 @@ export class HopDongImportDetailComponent implements OnInit {
         employee.isValid = false;
       }
 
-      if (!employee?.SoPhuLuc.trim()) {
-        employee.listStatus = [...employee.listStatus, this.listNote.find(e => e.code == "required_SoPhuLuc")];
-        employee.isValid = false;
-      }
-
       if (!employee?.NgayKyHD) {
         employee.listStatus = [...employee.listStatus, this.listNote.find(e => e.code == "required_NgayKyHD")];
         employee.isValid = false;
@@ -230,10 +224,10 @@ export class HopDongImportDetailComponent implements OnInit {
         employee.isValid = false;
       }
 
-      if (!employee?.NgayKetThucHD) {
-        employee.listStatus = [...employee.listStatus, this.listNote.find(e => e.code == "required_NgayKetThucHD")];
-        employee.isValid = false;
-      }
+      // if (!employee?.NgayKetThucHD) {
+      //   employee.listStatus = [...employee.listStatus, this.listNote.find(e => e.code == "required_NgayKetThucHD")];
+      //   employee.isValid = false;
+      // }
 
       if (!employee?.ChucVu.trim()) {
         employee.listStatus = [...employee.listStatus, this.listNote.find(e => e.code == "required_ChucVu")];
@@ -262,13 +256,13 @@ export class HopDongImportDetailComponent implements OnInit {
         }
       }
 
-      if (employee.SoPhuLuc) {
-        let check = this.soPhuLucInList.filter(x => x.toUpperCase().trim() == employee.SoPhuLuc.toUpperCase().trim());
-        if (check.length > 1) {
-          employee.listStatus = [...employee.listStatus, this.listNote.find(e => e.code == "existSoPhuLuc_inList")];
-          employee.isValid = false;
-        }
-      }
+      // if (employee.SoPhuLuc) {
+      //   let check = this.soPhuLucInList.filter(x => x.toUpperCase().trim() == employee.SoPhuLuc.toUpperCase().trim());
+      //   if (check.length > 1) {
+      //     employee.listStatus = [...employee.listStatus, this.listNote.find(e => e.code == "existSoPhuLuc_inList")];
+      //     employee.isValid = false;
+      //   }
+      // }
 
       //Check duplicate in DB
       if (employee.EmployeeCode) {
@@ -287,13 +281,13 @@ export class HopDongImportDetailComponent implements OnInit {
         }
       }
 
-      if (employee.SoPhuLuc) {
-        let check = this.soPhuLucInDB.filter(x => x.toUpperCase().trim() == employee.SoPhuLuc.toUpperCase().trim());
-        if (check.length != 0) {
-          employee.listStatus = [...employee.listStatus, this.listNote.find(e => e.code == "existSoPhuLuc_inDB")];
-          employee.isValid = false;
-        }
-      }
+      // if (employee.SoPhuLuc) {
+      //   let check = this.soPhuLucInDB.filter(x => x.toUpperCase().trim() == employee.SoPhuLuc.toUpperCase().trim());
+      //   if (check.length != 0) {
+      //     employee.listStatus = [...employee.listStatus, this.listNote.find(e => e.code == "existSoPhuLuc_inDB")];
+      //     employee.isValid = false;
+      //   }
+      // }
 
       //check chức vụ
       if (employee.ChucVu) {
@@ -357,7 +351,6 @@ export class HopDongImportDetailComponent implements OnInit {
       var newEmp = this.mapFormToEmployeeModel(item);
       listEmpAdditional.push(newEmp);
     });
-    console.log('listEmpAdditional', listEmpAdditional)
     this.loading = true;
     let result: any = await this.employeeService.importHDNS(listEmpAdditional);
     this.loading = false;
@@ -368,8 +361,6 @@ export class HopDongImportDetailComponent implements OnInit {
     } else {
       let mgs = { severity: 'error', summary: 'Thông báo', detail: result.message };
       this.showMessage(mgs);
-      this.getMasterdata();
-      this.checkStatus(true);
     }
   }
 
